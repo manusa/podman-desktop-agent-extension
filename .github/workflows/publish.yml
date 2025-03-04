@@ -1,0 +1,21 @@
+name: Publish
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  publish:
+    name: Publish
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Quay Login
+        run: |
+          echo ${{ secrets.QUAY_PASSWORD }} | docker login quay.io -u ${{ secrets.QUAY_USERNAME }} --password-stdin
+      - name: Build and Push
+        run: |
+          podman build -f Containerfile -t quay.io/manusa/podman-desktop-agent-extension:latest . 
+          podman push quay.io/manusa/podman-desktop-agent-extension:latest
