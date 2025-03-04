@@ -1,9 +1,10 @@
 {
   "name": "podman-desktop-agent-extension",
   "displayName": "Podman Desktop Agent",
-  "privete": true,
+  "private": true,
   "version": "0.0.0",
   "type": "module",
+  "icon": "icon.png",
   "description": "Podman Desktop Extension to deploy an AI Agent",
   "main": "./dist/podman-desktop-agent-extension.cjs",
   "repository": {

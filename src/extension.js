@@ -40,7 +40,7 @@ const uriFixer =
 export const activate = async extensionContext => {
   const wvp = extensionApi.window.createWebviewPanel(
     'podmanDesktopAgent',
-    'Podman Desktop Agent'
+    'Agent'
   );
   extensionContext.subscriptions.push(wvp);
   const loadResource = resourceLoader(extensionContext);
