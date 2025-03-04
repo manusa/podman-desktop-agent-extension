@@ -16,6 +16,6 @@ jobs:
         run: |
           echo ${{ secrets.QUAY_PASSWORD }} | docker login quay.io -u ${{ secrets.QUAY_USERNAME }} --password-stdin
       - name: Build and Push Extension
+        shell: bash
         run: |
-          podman build -f Containerfile.extension -t quay.io/manusa/podman-desktop-agent-extension:latest . 
-          podman push quay.io/manusa/podman-desktop-agent-extension:latest
+          ./scripts/build-image.sh "quay.io/manusa/podman-desktop-agent-extension" "latest"
