@@ -1,4 +1,4 @@
-export const spawnShell = async (file, args, {tty = false} = {}) => {
+export const spawnShell = (file, args, {tty = false} = {}) => {
   if (tty) {
     const pty = require('node-pty');
     return pty.spawn(file, args, {
@@ -13,12 +13,12 @@ export const spawnShell = async (file, args, {tty = false} = {}) => {
       cwd: process.env.HOME,
       env: process.env
     });
-    return Promise.resolve({
+    return {
       pid: spawnProcess.pid,
       onData: callback => spawnProcess.stdout.on('data', callback),
       write: data => spawnProcess.stdin.write(data),
       onExit: callback => spawnProcess.on('exit', callback),
       kill: () => spawnProcess.kill
-    });
+    };
   }
 };

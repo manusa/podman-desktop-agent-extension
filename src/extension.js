@@ -1,18 +1,15 @@
 import {replaceNodeModules} from './extension-setup.js';
 replaceNodeModules();
 const extensionApi = require('@podman-desktop/api');
-const os = require('node:os');
+
 const express = require('express');
 const http = require('http');
 const {Server} = require('ws');
 
 import {resourceLoader, uriFixer} from './extension-util';
-import {spawnShell} from './extension-shell.js';
+import {startAgentContainer, stopAgentContainer} from './extension-agent';
 
 const indexPathSegments = ['dist', 'browser', 'index.html'];
-const podmanCli = os.platform() === 'win32' ? 'podman.exe' : 'podman';
-const agentContainerName = 'podman-desktop-agent-client';
-const agentImageName = 'quay.io/manusa/podman-desktop-agent-client:latest';
 
 let server;
 
@@ -65,47 +62,27 @@ export const deactivate = () => {
   }
 };
 
-const startAgentContainer = async () => {
-  // User might have changed the configuration but the extension is not reloaded
-  await configuration.load();
-  return spawnShell(podmanCli, [
-    'run',
-    '--tty',
-    '--rm',
-    '-ti',
-    ...configuration.toEnv(),
-    '--name',
-    agentContainerName,
-    '--replace',
-    agentImageName
-  ]);
-};
-
 const startWebSocketServer = () => {
   const app = express();
   server = http.createServer(app);
   const wss = new Server({server});
   wss.on('connection', ws => {
     console.log('user connected');
-    ws.send('Greetings \x1B[1;3;31mProfessor Falken\x1B[0;0H\x1B[0m\n');
-    ws.send('Starting Goose...');
-    startAgentContainer().then(shell => {
-      ws.send('\x1B[H');
-      shell.onData(data => {
+    startAgentContainer({configuration, ws}).then(agent => {
+      ws.send('\x1B[2J\x1B[H');
+      agent.onData(data => {
         ws.send(data);
       });
-      shell.onExit(({exitCode}) => {
+      agent.onExit(({exitCode}) => {
         ws.send(`shell exited with code ${exitCode}`);
         ws.close();
       });
       ws.on('message', message => {
-        shell.write(message);
+        agent.write(message);
       });
       ws.on('close', () => {
+        stopAgentContainer();
         console.log('user disconnected');
-        spawnShell(podmanCli, ['kill', agentContainerName]).then(() =>
-          console.log('Agent container stopped')
-        );
       });
     });
   });
