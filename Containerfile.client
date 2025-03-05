@@ -1,0 +1,18 @@
+FROM registry.access.redhat.com/ubi9/ubi:9.5
+
+ENV GOOSE_BIN_DIR=/opt/goose
+
+# Install dependencies
+RUN dnf install -y bzip2 libxcb
+RUN useradd goose && \
+    mkdir -p $GOOSE_BIN_DIR && chown goose:goose $GOOSE_BIN_DIR
+
+USER goose
+WORKDIR /tmp
+
+# Install Goose
+RUN curl -fsSL https://github.com/block/goose/releases/download/stable/download_cli.sh | bash
+
+WORKDIR $GOOSE_BIN_DIR
+
+CMD ["sh", "-c", "${GOOSE_BIN_DIR}/goose"]
