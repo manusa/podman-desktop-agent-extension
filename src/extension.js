@@ -87,7 +87,10 @@ const startWebSocketServer = () => {
   const wss = new Server({server});
   wss.on('connection', ws => {
     console.log('user connected');
+    ws.send('Greetings \x1B[1;3;31mProfessor Falken\x1B[0;0H\x1B[0m\n');
+    ws.send('Starting Goose...');
     startAgentContainer().then(shell => {
+      ws.send('\x1B[H');
       shell.onData(data => {
         ws.send(data);
       });
@@ -98,7 +101,6 @@ const startWebSocketServer = () => {
       ws.on('message', message => {
         shell.write(message);
       });
-      // ws.send('Greetings \x1B[1;3;31mProfessor Falken\x1B[0;0H\x1B[0m\n$ ');
       ws.on('close', () => {
         console.log('user disconnected');
         spawnShell(podmanCli, ['kill', agentContainerName]).then(() =>
