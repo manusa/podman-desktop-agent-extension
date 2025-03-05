@@ -1,18 +1,30 @@
+const fs = require('node:fs');
 const os = require('node:os');
-let pty, extensionApi, express, http, Server;
-if (os.platform() === 'win32' /*&& os.arch() === 'x64'*/) { // Needs checks for windows/arm64
-  pty = require('../node_modules_windows_x64/node-pty');
-  extensionApi = require('../node_modules_windows_x64/@podman-desktop/api');
-  express = require('../node_modules_windows_x64/express');
-  http = require('../node_modules_windows_x64/http');
-  Server = require('../node_modules_windows_x64/ws').Server;
-} else {
-  pty = require('node-pty');
-  extensionApi = require('@podman-desktop/api');
-  express = require('express');
-  http = require('http');
-  Server = require('ws').Server;
+const path = require('node:path');
+
+// Replace node_modules in Windows environments when deployed from Container.agent
+if (
+  // I need to check if it works for windows/arm64 too
+  os.platform() === 'win32' /*&& os.arch() === 'x64'*/ &&
+  fs.existsSync(path.join(__dirname, '..', 'node_modules_windows_x64'))
+) {
+  fs.rmSync(path.join(__dirname, '..', 'node_modules'), {
+    recursive: true,
+    force: true
+  });
+  fs.renameSync(
+    path.join(__dirname, '..', 'node_modules_windows_x64'),
+    path.join(__dirname, '..', 'node_modules')
+  );
 }
+
+const extensionApi = require('@podman-desktop/api');
+const express = require('express');
+const http = require('http');
+const {Server} = require('ws');
+
+let pty = require('node-pty');
+
 import {resourceLoader, uriFixer} from './extension-util';
 
 const indexPathSegments = ['dist', 'browser', 'index.html'];
