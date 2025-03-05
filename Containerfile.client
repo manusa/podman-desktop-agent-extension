@@ -13,6 +13,12 @@ WORKDIR /tmp
 # Install Goose
 RUN curl -fsSL https://github.com/block/goose/releases/download/stable/download_cli.sh | bash
 
+# Config Goose
+COPY --chown=goose --chmod=711 scripts/entrypoint.sh $GOOSE_BIN_DIR/entrypoint.sh
+RUN echo '${GOOSE_BIN_DIR}/goose "$@"' >> $GOOSE_BIN_DIR/entrypoint.sh
+#RUN echo 'echo "$@"' >> $GOOSE_BIN_DIR/entrypoint.sh
+
 WORKDIR $GOOSE_BIN_DIR
 
-CMD ["sh", "-c", "${GOOSE_BIN_DIR}/goose"]
+ENTRYPOINT ["sh", "-c", "${GOOSE_BIN_DIR}/entrypoint.sh"]
+CMD ["--help"]
