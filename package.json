@@ -22,14 +22,15 @@
   },
   "homepage": "https://github.com/manusa/podman-desktop-agent-extension#readme",
   "scripts": {
-    "prebuild": "npx @electron/rebuild -v 34.3.0 && npm run prettier && npm run lint",
+    "electron-rebuild": "npx @electron/rebuild -v 34.3.0",
+    "prebuild": "npm run electron-rebuild && npm run prettier && npm run lint",
     "build": "concurrently \"vite -c vite.frontend.config.js build\" \"vite -c vite.backend.config.js build\"",
     "lint": "eslint --report-unused-disable-directives --max-warnings 0",
     "prettier": "prettier 'src/**/*.{js,jsx,ts,tsx,json,css,scss,md}' --write",
     "watch": "concurrently \"vite -c vite.frontend.config.js build --watch\" \"vite -c vite.backend.config.js build --watch\""
   },
   "dependencies": {
-    "node-pty": "1.0.0"
+    "node-pty": "1.1.0-beta30"
   },
   "devDependencies": {
     "@podman-desktop/api": "1.17.0",
