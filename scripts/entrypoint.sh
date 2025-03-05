@@ -7,7 +7,7 @@ GOOSE_PROVIDER: $GOOSE_PROVIDER
 GOOSE_MODEL: $GOOSE_MODEL
 extensions:
   podman-sse:
-    enabled: false
+    enabled: $SSE_ENABLED
     envs: {}
     name: podman-sse
     type: sse

@@ -35,6 +35,8 @@ const configuration = {
       '-e',
       `GOOGLE_API_KEY=${configuration.googleApiKey}`,
       '-e',
+      'SSE_ENABLED=true',
+      '-e',
       `SSE_PORT=${configuration.mcpPort}`
     ];
   }
