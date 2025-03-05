@@ -16,6 +16,7 @@ export const spawnShell = async (file, args, {tty = false} = {}) => {
     return Promise.resolve({
       pid: spawnProcess.pid,
       onData: callback => spawnProcess.stdout.on('data', callback),
+      write: data => spawnProcess.stdin.write(data),
       onExit: callback => spawnProcess.on('exit', callback),
       kill: () => spawnProcess.kill
     });
