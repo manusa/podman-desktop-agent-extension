@@ -7,6 +7,28 @@
   "icon": "icon.png",
   "description": "Podman Desktop Extension to deploy an AI Agent",
   "main": "./dist/podman-desktop-agent-extension.cjs",
+  "contributes": {
+    "configuration": {
+      "title": "Agent",
+      "properties": {
+        "agent.goose.provider": {
+          "type": "string",
+          "default": "gemini",
+          "enum": ["gemini", "ollama"],
+          "description": "Goose LLM Provider"
+        },
+        "agent.goose.model": {
+          "type": "string",
+          "description": "Goose LLM Model name"
+        },
+        "agent.goose.provider.gemini.googleApiKey": {
+          "type": "string",
+          "default": "",
+          "description": "Google API Key"
+        }
+      }
+    }
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/manusa/podman-desktop-agent-extension.git"
