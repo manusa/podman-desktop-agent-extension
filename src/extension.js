@@ -15,21 +15,14 @@ if (
     path.join(__dirname, 'node_modules')
   );
 }
-
-const extensionApi = require('@podman-desktop/api');
-const express = require('express');
-const http = require('http');
-const {Server} = require('ws');
-
-let pty = require('node-pty');
-
-import {resourceLoader, uriFixer} from './extension-util';
-
+// Lazy load dependencies to allow for the above platform-specific code to run
+let server;
 const indexPathSegments = ['dist', 'browser', 'index.html'];
 
-let server;
-
 export const activate = async extensionContext => {
+  const extensionApi = require('@podman-desktop/api');
+  const {resourceLoader, uriFixer} = await import('./extension-util');
+
   const wvp = extensionApi.window.createWebviewPanel(
     'podmanDesktopAgent',
     'Agent'
@@ -54,16 +47,23 @@ export const deactivate = () => {
 };
 
 const spawnShell = () => {
-  return pty.spawn(os.platform() === 'win32' ? 'cmd.exe' : 'sh', [], {
-    name: 'xterm-color',
-    cols: 80,
-    rows: 30,
-    cwd: process.env.HOME,
-    env: process.env
-  });
+  return require('node-pty').spawn(
+    os.platform() === 'win32' ? 'cmd.exe' : 'sh',
+    [],
+    {
+      name: 'xterm-color',
+      cols: 80,
+      rows: 30,
+      cwd: process.env.HOME,
+      env: process.env
+    }
+  );
 };
 
 const startWebSocketServer = () => {
+  const express = require('express');
+  const http = require('http');
+  const {Server} = require('ws');
   const app = express();
   server = http.createServer(app);
   const wss = new Server({server});
