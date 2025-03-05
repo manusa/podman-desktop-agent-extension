@@ -56,7 +56,9 @@ export const deactivate = () => {
 };
 
 const spawnShell = () => {
-  return pty.spawn(os.platform() === 'win32' ? 'cmd.exe' : 'sh', [], {
+  return pty.spawn(os.platform() === 'win32' ? 'podman.exe' : 'podman', [
+    'run', '--rm', '-ti', 'quay.io/manusa/podman-desktop-agent-client:latest'
+  ], {
     name: 'xterm-color',
     cwd: process.env.HOME,
     env: process.env
