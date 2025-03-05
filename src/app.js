@@ -1,8 +1,8 @@
 /* eslint-disable no-undef */
 import {Terminal} from '@xterm/xterm';
-import '@xterm/xterm/css/xterm.css';
 import {AttachAddon} from '@xterm/addon-attach';
 import {FitAddon} from '@xterm/addon-fit';
+import '@xterm/xterm/css/xterm.css';
 
 const terminalContainer = document.getElementById('terminal');
 const term = new Terminal({
