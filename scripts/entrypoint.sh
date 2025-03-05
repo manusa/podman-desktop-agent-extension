@@ -11,7 +11,7 @@ extensions:
     envs: {}
     name: podman-sse
     type: sse
-    uri: http://host.containers.internal:$SSE_PORT/
+    uri: http://host.containers.internal:$SSE_PORT/sse
 
 EOF
 
