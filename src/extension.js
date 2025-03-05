@@ -33,12 +33,36 @@ const agentImageName = 'quay.io/manusa/podman-desktop-agent-client:latest';
 
 let server;
 
+const configuration = {
+  toEnv: () => {
+    return [
+      '-e',
+      `GOOSE_PROVIDER=${configuration.provider}`,
+      '-e',
+      `GOOSE_MODEL=${configuration.model}`,
+      '-e',
+      `GOOGLE_API_KEY=${configuration.googleApiKey}`
+    ];
+  }
+};
+
 export const activate = async extensionContext => {
   const wvp = extensionApi.window.createWebviewPanel(
     'podmanDesktopAgent',
     'Agent'
   );
   extensionContext.subscriptions.push(wvp);
+  // Load Configuration
+  configuration.provider = await extensionApi.configuration
+    .getConfiguration('agent.goose')
+    .get('provider');
+  configuration.model = await extensionApi.configuration
+    .getConfiguration('agent.goose')
+    .get('model');
+  configuration.googleApiKey = await extensionApi.configuration
+    .getConfiguration('agent.goose.provider.gemini')
+    .get('googleApiKey');
+  // Set up the webview
   const loadResource = resourceLoader(extensionContext);
   const fixResource = uriFixer({extensionContext, webView: wvp.webview});
   startWebSocketServer();
@@ -75,6 +99,7 @@ const startWebSocketServer = () => {
       'run',
       '--rm',
       '-ti',
+      ...configuration.toEnv(),
       '--name',
       agentContainerName,
       agentImageName
