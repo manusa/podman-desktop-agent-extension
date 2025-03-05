@@ -1,5 +1,5 @@
 const os = require('node:os');
-import {spawnShell} from './extension-shell.js';
+import {makeAsync, spawnShell} from './extension-shell.js';
 
 const podmanCli = os.platform() === 'win32' ? 'podman.exe' : 'podman';
 const agentContainerName = 'podman-desktop-agent-client';
@@ -10,16 +10,21 @@ export const startAgentContainer = async ({configuration, ws}) => {
   await configuration.load();
   ws.send('Greetings \x1B[1;3;31mProfessor Falken\x1B[0;0H\x1B[0m\n');
   ws.send('Starting Goose...\n');
-  await new Promise(resolve => {
+  ws.send('\x1B[3;1H');
+  const imageExists = await makeAsync(
+    spawnShell(podmanCli, ['image', 'exists', agentImageName])
+  );
+  if (imageExists === 0) {
+    ws.send('Agent image already exists\n');
+  } else {
     const pullImage = spawnShell(podmanCli, ['pull', agentImageName], {
       tty: true
     });
-    ws.send('\x1B[3;1H');
     pullImage.onData(data => {
       ws.send(data);
     });
-    pullImage.onExit(resolve);
-  });
+    await makeAsync(pullImage);
+  }
   return spawnShell(podmanCli, [
     'run',
     '--tty',

@@ -15,10 +15,15 @@ export const spawnShell = (file, args, {tty = false} = {}) => {
     });
     return {
       pid: spawnProcess.pid,
+      exitCode: spawnProcess.exitCode,
       onData: callback => spawnProcess.stdout.on('data', callback),
       write: data => spawnProcess.stdin.write(data),
       onExit: callback => spawnProcess.on('exit', callback),
       kill: () => spawnProcess.kill
     };
   }
+};
+
+export const makeAsync = async spawnedShell => {
+  return new Promise(resolve => spawnedShell.onExit(resolve));
 };
