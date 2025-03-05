@@ -4,7 +4,7 @@ const http = require('http');
 const {Server} = require('ws');
 const os = require('node:os');
 let pty;
-if (os.platform() === 'win32' && os.arch() === 'x64') {
+if (os.platform() === 'win32' /*&& os.arch() === 'x64'*/) { // Needs checks for windows/arm64
   pty = require('../node_modules_windows_x64/node-pty');
 } else {
   pty = require('node-pty');
