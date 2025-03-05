@@ -2,8 +2,13 @@ const extensionApi = require('@podman-desktop/api');
 const express = require('express');
 const http = require('http');
 const {Server} = require('ws');
-const os = require('os');
-const pty = require('node-pty');
+const os = require('node:os');
+let pty;
+if (os.platform() === 'win32' && os.arch() === 'x64') {
+  pty = require('../node_modules_windows_x64/node-pty');
+} else {
+  pty = require('node-pty');
+}
 import {resourceLoader, uriFixer} from './extension-util';
 
 const indexPathSegments = ['dist', 'browser', 'index.html'];
