@@ -1,14 +1,28 @@
+const fs = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
+if (
+  // I need to check if it works for windows/arm64 too
+  os.platform() === 'win32' /*&& os.arch() === 'x64'*/ &&
+  fs.existsSync(path.join(__dirname, 'node_modules_windows_x64'))
+) {
+  fs.rmSync(path.join(__dirname, 'node_modules'), {
+    recursive: true,
+    force: true
+  });
+  fs.renameSync(
+    path.join(__dirname, 'node_modules_windows_x64'),
+    path.join(__dirname, 'node_modules')
+  );
+}
+
 const extensionApi = require('@podman-desktop/api');
 const express = require('express');
 const http = require('http');
 const {Server} = require('ws');
-const os = require('node:os');
-let pty;
-if (os.platform() === 'win32' /*&& os.arch() === 'x64'*/) { // Needs checks for windows/arm64
-  pty = require('../node_modules_windows_x64/node-pty');
-} else {
-  pty = require('node-pty');
-}
+
+let pty = require('node-pty');
+
 import {resourceLoader, uriFixer} from './extension-util';
 
 const indexPathSegments = ['dist', 'browser', 'index.html'];
