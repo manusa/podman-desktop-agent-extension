@@ -13,17 +13,17 @@
       "properties": {
         "agent.goose.provider": {
           "type": "string",
-          "default": "gemini",
-          "enum": ["gemini", "ollama"],
+          "default": "google",
+          "enum": ["google", "ollama"],
           "description": "Goose LLM Provider"
         },
         "agent.goose.model": {
           "type": "string",
+          "default": "gemini-2.0-flash",
           "description": "Goose LLM Model name"
         },
         "agent.goose.provider.gemini.googleApiKey": {
           "type": "string",
-          "default": "",
           "description": "Google API Key"
         }
       }
