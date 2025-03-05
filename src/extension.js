@@ -2,7 +2,7 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 
-// Replace node_modules in Windows environments when deployed from Container.agent
+// Replace node_modules in Windows environments when deployed from Containerfile.extension
 if (
   // I need to check if it works for windows/arm64 too
   os.platform() === 'win32' /*&& os.arch() === 'x64'*/ &&
@@ -58,8 +58,6 @@ export const deactivate = () => {
 const spawnShell = () => {
   return pty.spawn(os.platform() === 'win32' ? 'cmd.exe' : 'sh', [], {
     name: 'xterm-color',
-    cols: 80,
-    rows: 30,
     cwd: process.env.HOME,
     env: process.env
   });
