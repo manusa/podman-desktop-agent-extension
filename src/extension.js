@@ -1,28 +1,25 @@
-const fs = require('node:fs');
 const os = require('node:os');
-const path = require('node:path');
-if (
-  // I need to check if it works for windows/arm64 too
-  os.platform() === 'win32' /*&& os.arch() === 'x64'*/ &&
-  fs.existsSync(path.join(__dirname, 'node_modules_windows_x64'))
-) {
-  fs.rmSync(path.join(__dirname, 'node_modules'), {
-    recursive: true,
-    force: true
-  });
-  fs.renameSync(
-    path.join(__dirname, 'node_modules_windows_x64'),
-    path.join(__dirname, 'node_modules')
-  );
+let pty, extensionApi, express, http, Server;
+if (os.platform() === 'win32' /*&& os.arch() === 'x64'*/) { // Needs checks for windows/arm64
+  pty = require('../node_modules_windows_x64/node-pty');
+  extensionApi = require('../node_modules_windows_x64/@podman-desktop/api');
+  express = require('../node_modules_windows_x64/express');
+  http = require('../node_modules_windows_x64/http');
+  Server = require('../node_modules_windows_x64/ws').Server;
+} else {
+  pty = require('node-pty');
+  extensionApi = require('@podman-desktop/api');
+  express = require('express');
+  http = require('http');
+  Server = require('ws').Server;
 }
-// Lazy load dependencies to allow for the above platform-specific code to run
-let server;
+import {resourceLoader, uriFixer} from './extension-util';
+
 const indexPathSegments = ['dist', 'browser', 'index.html'];
 
-export const activate = async extensionContext => {
-  const extensionApi = require('@podman-desktop/api');
-  const {resourceLoader, uriFixer} = await import('./extension-util');
+let server;
 
+export const activate = async extensionContext => {
   const wvp = extensionApi.window.createWebviewPanel(
     'podmanDesktopAgent',
     'Agent'
@@ -47,23 +44,16 @@ export const deactivate = () => {
 };
 
 const spawnShell = () => {
-  return require('node-pty').spawn(
-    os.platform() === 'win32' ? 'cmd.exe' : 'sh',
-    [],
-    {
-      name: 'xterm-color',
-      cols: 80,
-      rows: 30,
-      cwd: process.env.HOME,
-      env: process.env
-    }
-  );
+  return pty.spawn(os.platform() === 'win32' ? 'cmd.exe' : 'sh', [], {
+    name: 'xterm-color',
+    cols: 80,
+    rows: 30,
+    cwd: process.env.HOME,
+    env: process.env
+  });
 };
 
 const startWebSocketServer = () => {
-  const express = require('express');
-  const http = require('http');
-  const {Server} = require('ws');
   const app = express();
   server = http.createServer(app);
   const wss = new Server({server});
