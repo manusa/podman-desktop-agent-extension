@@ -1,11 +1,9 @@
-FROM docker.io/node:22-bullseye AS builder
+FROM scratch AS builder
 
-COPY . /extension
-
-WORKDIR /extension
-
-RUN npm install  && \
-    npm run build
+COPY node_modules /extension/node_modules
+COPY node_modules_windows_x64 /extension/node_modules_windows_x64
+COPY package.json icon.png LICENSE README.md /extension/
+COPY dist /extension/dist
 
 FROM scratch
 
