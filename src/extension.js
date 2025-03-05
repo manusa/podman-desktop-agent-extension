@@ -22,12 +22,14 @@ const extensionApi = require('@podman-desktop/api');
 const express = require('express');
 const http = require('http');
 const {Server} = require('ws');
-
-let pty = require('node-pty');
+const pty = require('node-pty');
 
 import {resourceLoader, uriFixer} from './extension-util';
 
 const indexPathSegments = ['dist', 'browser', 'index.html'];
+const podmanCli = os.platform() === 'win32' ? 'podman.exe' : 'podman';
+const agentContainerName = 'podman-desktop-agent-client';
+const agentImageName = 'quay.io/manusa/podman-desktop-agent-client:latest';
 
 let server;
 
@@ -55,10 +57,8 @@ export const deactivate = () => {
   }
 };
 
-const spawnShell = () => {
-  return pty.spawn(os.platform() === 'win32' ? 'podman.exe' : 'podman', [
-    'run', '--rm', '-ti', 'quay.io/manusa/podman-desktop-agent-client:latest'
-  ], {
+const spawnShell = (file, args) => {
+  return pty.spawn(file, args, {
     name: 'xterm-color',
     cwd: process.env.HOME,
     env: process.env
@@ -71,7 +71,14 @@ const startWebSocketServer = () => {
   const wss = new Server({server});
   wss.on('connection', ws => {
     console.log('user connected');
-    const shell = spawnShell();
+    const shell = spawnShell(podmanCli, [
+      'run',
+      '--rm',
+      '-ti',
+      '--name',
+      agentContainerName,
+      agentImageName
+    ]);
     shell.onData(data => {
       ws.send(data);
     });
@@ -85,6 +92,7 @@ const startWebSocketServer = () => {
     // ws.send('Greetings \x1B[1;3;31mProfessor Falken\x1B[0;0H\x1B[0m\n$ ');
     ws.on('close', () => {
       shell.kill();
+      spawnShell(podmanCli, ['kill', agentContainerName]);
       console.log('user disconnected');
     });
   });
