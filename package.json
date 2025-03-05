@@ -25,6 +25,11 @@
         "agent.goose.provider.gemini.googleApiKey": {
           "type": "string",
           "description": "Google API Key"
+        },
+        "agent.mcp.port": {
+          "type": "integer",
+          "default": "8080",
+          "description": "Podman MCP Server SSE port"
         }
       }
     }
