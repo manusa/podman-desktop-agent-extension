@@ -7,6 +7,7 @@ on:
 
 env:
   NODE_VERSION: 22
+  PODMAN_MCP_SERVER_VERSION: 0.0.3
   IMAGE_NAME: quay.io/manusa/podman-desktop-agent-extension
   TAG: latest
 
@@ -53,6 +54,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+      - name: Download Podman MCP Server
+        run: |
+          ./scripts/download-podman-mcp-server.sh
       - name: Download Node Modules Windows x64
         uses: actions/download-artifact@v4
         with:
