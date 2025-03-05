@@ -34,6 +34,17 @@ const agentImageName = 'quay.io/manusa/podman-desktop-agent-client:latest';
 let server;
 
 const configuration = {
+  load: async () => {
+    configuration.provider = await extensionApi.configuration
+      .getConfiguration('agent.goose')
+      .get('provider');
+    configuration.model = await extensionApi.configuration
+      .getConfiguration('agent.goose')
+      .get('model');
+    configuration.googleApiKey = await extensionApi.configuration
+      .getConfiguration('agent.goose.provider.gemini')
+      .get('googleApiKey');
+  },
   toEnv: () => {
     return [
       '-e',
@@ -52,16 +63,6 @@ export const activate = async extensionContext => {
     'Agent'
   );
   extensionContext.subscriptions.push(wvp);
-  // Load Configuration
-  configuration.provider = await extensionApi.configuration
-    .getConfiguration('agent.goose')
-    .get('provider');
-  configuration.model = await extensionApi.configuration
-    .getConfiguration('agent.goose')
-    .get('model');
-  configuration.googleApiKey = await extensionApi.configuration
-    .getConfiguration('agent.goose.provider.gemini')
-    .get('googleApiKey');
   // Set up the webview
   const loadResource = resourceLoader(extensionContext);
   const fixResource = uriFixer({extensionContext, webView: wvp.webview});
@@ -81,12 +82,27 @@ export const deactivate = () => {
   }
 };
 
-const spawnShell = (file, args) => {
+const spawnShell = async (file, args) => {
   return pty.spawn(file, args, {
     name: 'xterm-color',
     cwd: process.env.HOME,
     env: process.env
   });
+};
+
+const startAgentContainer = async () => {
+  // User might have changed the configuration but the extension is not reloaded
+  await configuration.load();
+  return spawnShell(podmanCli, [
+    'run',
+    '--rm',
+    '-ti',
+    ...configuration.toEnv(),
+    '--name',
+    agentContainerName,
+    '--replace',
+    agentImageName
+  ])
 };
 
 const startWebSocketServer = () => {
@@ -95,30 +111,24 @@ const startWebSocketServer = () => {
   const wss = new Server({server});
   wss.on('connection', ws => {
     console.log('user connected');
-    const shell = spawnShell(podmanCli, [
-      'run',
-      '--rm',
-      '-ti',
-      ...configuration.toEnv(),
-      '--name',
-      agentContainerName,
-      agentImageName
-    ]);
-    shell.onData(data => {
-      ws.send(data);
-    });
-    shell.onExit(({exitCode}) => {
-      ws.send(`shell exited with code ${exitCode}`);
-      ws.close();
-    });
-    ws.on('message', message => {
-      shell.write(message);
-    });
-    // ws.send('Greetings \x1B[1;3;31mProfessor Falken\x1B[0;0H\x1B[0m\n$ ');
-    ws.on('close', () => {
-      shell.kill();
-      spawnShell(podmanCli, ['kill', agentContainerName]);
-      console.log('user disconnected');
+    startAgentContainer().then(shell => {
+      shell.onData(data => {
+        ws.send(data);
+      });
+      shell.onExit(({exitCode}) => {
+        ws.send(`shell exited with code ${exitCode}`);
+        ws.close();
+      });
+      ws.on('message', message => {
+        shell.write(message);
+      });
+      // ws.send('Greetings \x1B[1;3;31mProfessor Falken\x1B[0;0H\x1B[0m\n$ ');
+      ws.on('close', () => {
+        console.log('user disconnected');
+        spawnShell(podmanCli, ['kill', agentContainerName]).then(() =>
+          console.log('Agent container stopped')
+        );
+      });
     });
   });
   server.listen(0, () => {
