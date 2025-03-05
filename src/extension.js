@@ -1,30 +1,13 @@
-const fs = require('node:fs');
-const os = require('node:os');
-const path = require('node:path');
-
-// Replace node_modules in Windows environments when deployed from Containerfile.extension
-if (
-  // I need to check if it works for windows/arm64 too
-  os.platform() === 'win32' /*&& os.arch() === 'x64'*/ &&
-  fs.existsSync(path.join(__dirname, '..', 'node_modules_windows_x64'))
-) {
-  fs.rmSync(path.join(__dirname, '..', 'node_modules'), {
-    recursive: true,
-    force: true
-  });
-  fs.renameSync(
-    path.join(__dirname, '..', 'node_modules_windows_x64'),
-    path.join(__dirname, '..', 'node_modules')
-  );
-}
-
+import {replaceNodeModules} from './extension-setup.js';
+replaceNodeModules();
 const extensionApi = require('@podman-desktop/api');
+const os = require('node:os');
 const express = require('express');
 const http = require('http');
 const {Server} = require('ws');
-const pty = require('node-pty');
 
 import {resourceLoader, uriFixer} from './extension-util';
+import {spawnShell} from './extension-shell.js';
 
 const indexPathSegments = ['dist', 'browser', 'index.html'];
 const podmanCli = os.platform() === 'win32' ? 'podman.exe' : 'podman';
@@ -82,19 +65,12 @@ export const deactivate = () => {
   }
 };
 
-const spawnShell = async (file, args) => {
-  return pty.spawn(file, args, {
-    name: 'xterm-color',
-    cwd: process.env.HOME,
-    env: process.env
-  });
-};
-
 const startAgentContainer = async () => {
   // User might have changed the configuration but the extension is not reloaded
   await configuration.load();
   return spawnShell(podmanCli, [
     'run',
+    '--tty',
     '--rm',
     '-ti',
     ...configuration.toEnv(),
@@ -102,7 +78,7 @@ const startAgentContainer = async () => {
     agentContainerName,
     '--replace',
     agentImageName
-  ])
+  ]);
 };
 
 const startWebSocketServer = () => {
