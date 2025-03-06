@@ -24,7 +24,7 @@ export const startMcpServer = ({configuration, extensionContext}) => {
     '--sse-port',
     configuration.mcpPort,
     '--sse-public-host',
-    'host.containers.internal'
+    configuration.mcpHost
   ]);
   mcpServer.onExit(code => {
     console.log(`Podman MCP server exited with code ${code}`);

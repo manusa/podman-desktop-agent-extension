@@ -12,6 +12,7 @@ let webSocketServer;
 let mcpServer;
 
 const configuration = {
+  mcpHost: 'host.containers.internal',
   load: async () => {
     configuration.provider = await extensionApi.configuration
       .getConfiguration('agent.goose')
@@ -36,6 +37,8 @@ const configuration = {
       `GOOGLE_API_KEY=${configuration.googleApiKey}`,
       '-e',
       'SSE_ENABLED=true',
+      '-e',
+      `SSE_HOST=${configuration.mcpHost}`,
       '-e',
       `SSE_PORT=${configuration.mcpPort}`
     ];
