@@ -56,7 +56,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
       - name: Download Podman MCP Server
         run: |
-          ./scripts/download-podman-mcp-server.sh
+          ./scripts/download-podman-mcp-server.sh ${{ env.PODMAN_MCP_SERVER_VERSION }}
       - name: Download Node Modules Windows x64
         uses: actions/download-artifact@v4
         with:
