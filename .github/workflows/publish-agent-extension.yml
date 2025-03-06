@@ -23,7 +23,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
       - name: Install Node Modules
         run: |
-          npm install
+          npm install --production
           Remove-Item -Path node_modules_windows_x64 -Recurse -Force
           Rename-Item -Path node_modules -NewName node_modules_windows_x64
       - name: Store Node Modules
@@ -66,6 +66,8 @@ jobs:
         run: npm install
       - name: Build
         run: npm run build
+      - name: Prune dev Node Modules
+        run: npm prune --production
       - name: Quay Login
         run: |
           echo ${{ secrets.QUAY_PASSWORD }} | docker login quay.io -u ${{ secrets.QUAY_USERNAME }} --password-stdin

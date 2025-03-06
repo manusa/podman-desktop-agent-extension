@@ -57,20 +57,20 @@
     "watch": "concurrently \"vite -c vite.frontend.config.js build --watch\" \"vite -c vite.backend.config.js build --watch\""
   },
   "dependencies": {
-    "node-pty": "1.1.0-beta30"
-  },
-  "devDependencies": {
     "@podman-desktop/api": "1.17.0",
     "@xterm/addon-attach": "0.11.0",
     "@xterm/addon-fit": "0.10.0",
     "@xterm/xterm": "5.5.0",
+    "express": "5.0.1",
+    "node-pty": "1.1.0-beta30",
+    "ws": "8.18.1"
+  },
+  "devDependencies": {
     "concurrently": "9.1.2",
     "eslint": "9.21.0",
-    "express": "5.0.1",
     "globals": "16.0.0",
     "prettier": "3.5.2",
-    "vite": "6.2.0",
-    "ws": "8.18.1"
+    "vite": "6.2.0"
   },
   "prettier": {
     "singleQuote": true,
