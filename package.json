@@ -14,7 +14,7 @@
         "agent.goose.provider": {
           "type": "string",
           "default": "google",
-          "enum": ["google", "ollama"],
+          "enum": ["google"],
           "description": "Goose LLM Provider"
         },
         "agent.goose.model": {
