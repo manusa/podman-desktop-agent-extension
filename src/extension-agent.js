@@ -1,7 +1,5 @@
-const os = require('node:os');
 import {makeAsync, spawnShell} from './extension-shell.js';
 
-const podmanCli = os.platform() === 'win32' ? 'podman.exe' : 'podman';
 const agentContainerName = 'podman-desktop-agent-client';
 const agentImageName = 'quay.io/manusa/podman-desktop-agent-client:latest';
 
@@ -12,12 +10,12 @@ export const startAgentContainer = async ({configuration, ws}) => {
   ws.send('Starting Goose...\n');
   ws.send('\x1B[3;1H');
   const imageExists = await makeAsync(
-    spawnShell(podmanCli, ['image', 'exists', agentImageName])
+    spawnShell(configuration.podmanCli, ['image', 'exists', agentImageName])
   );
   if (imageExists === 0) {
     ws.send('Agent image already exists\n');
   } else {
-    const pullImage = spawnShell(podmanCli, ['pull', agentImageName], {
+    const pullImage = spawnShell(configuration.podmanCli, ['pull', agentImageName], {
       tty: true
     });
     pullImage.onData(data => {
@@ -25,7 +23,7 @@ export const startAgentContainer = async ({configuration, ws}) => {
     });
     await makeAsync(pullImage);
   }
-  return spawnShell(podmanCli, [
+  return spawnShell(configuration.podmanCli, [
     'run',
     '--tty',
     '--rm',
@@ -38,7 +36,7 @@ export const startAgentContainer = async ({configuration, ws}) => {
   ]);
 };
 
-export const stopAgentContainer = () => {
-  spawnShell(podmanCli, ['kill', agentContainerName]);
+export const stopAgentContainer = ({configuration}) => {
+  spawnShell(configuration.podmanCli, ['kill', agentContainerName]);
   console.log('Agent container stopped');
 };

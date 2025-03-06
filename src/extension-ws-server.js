@@ -26,7 +26,7 @@ export const startWebSocketServer = configuration => {
         agent.write(message);
       });
       ws.on('close', () => {
-        stopAgentContainer();
+        stopAgentContainer({configuration});
         console.log('user disconnected');
       });
     });

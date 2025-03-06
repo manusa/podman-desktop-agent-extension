@@ -4,7 +4,7 @@ import {spawnShell} from './extension-shell.js';
 
 export const startMcpServer = ({configuration, extensionContext}) => {
   let binaryName = 'podman-mcp-server-';
-  if (os.platform() === 'win32') {
+  if (configuration.isWindows) {
     binaryName += 'windows';
   } else {
     binaryName += os.platform();

@@ -3,47 +3,16 @@ replaceNodeModules();
 const extensionApi = require('@podman-desktop/api');
 
 import {resourceLoader, uriFixer} from './extension-util';
-import {startWebSocketServer} from './extension-ws-server';
+import {newConfiguration} from './extension-configuration';
 import {startMcpServer} from './extension-mcp-server.js';
+import {startWebSocketServer} from './extension-ws-server';
 
 const indexPathSegments = ['dist', 'browser', 'index.html'];
 
 let webSocketServer;
 let mcpServer;
 
-const configuration = {
-  mcpHost: 'host.containers.internal',
-  load: async () => {
-    configuration.provider = await extensionApi.configuration
-      .getConfiguration('agent.goose')
-      .get('provider');
-    configuration.model = await extensionApi.configuration
-      .getConfiguration('agent.goose')
-      .get('model');
-    configuration.googleApiKey = await extensionApi.configuration
-      .getConfiguration('agent.goose.provider.gemini')
-      .get('googleApiKey');
-    configuration.mcpPort = await extensionApi.configuration
-      .getConfiguration('agent.mcp')
-      .get('port');
-  },
-  toEnv: () => {
-    return [
-      '-e',
-      `GOOSE_PROVIDER=${configuration.provider}`,
-      '-e',
-      `GOOSE_MODEL=${configuration.model}`,
-      '-e',
-      `GOOGLE_API_KEY=${configuration.googleApiKey}`,
-      '-e',
-      'SSE_ENABLED=true',
-      '-e',
-      `SSE_HOST=${configuration.mcpHost}`,
-      '-e',
-      `SSE_PORT=${configuration.mcpPort}`
-    ];
-  }
-};
+const configuration = newConfiguration();
 
 export const activate = async extensionContext => {
   const wvp = extensionApi.window.createWebviewPanel(
