@@ -6,6 +6,7 @@ import {resourceLoader, uriFixer} from './extension-util';
 import {newConfiguration} from './extension-configuration';
 import {startMcpServer} from './extension-mcp-server.js';
 import {startWebSocketServer} from './extension-ws-server';
+import {spawnShellSync} from './extension-shell.js';
 
 const indexPathSegments = ['dist', 'browser', 'index.html'];
 
@@ -38,8 +39,11 @@ export const deactivate = () => {
   console.log('Stopping Podman Desktop Agent extension');
   if (mcpServer) {
     console.log('Stopping MCP');
-    mcpServer.kill();
     process.kill(mcpServer.pid);
+    if (configuration.isWindows) {
+      // For some reason the process won't get killed on Windows
+      spawnShellSync('taskkill', ['/PID', mcpServer.pid, '/T', '/F']);
+    }
   }
   if (webSocketServer) {
     console.log('Stopping Web Socket Server');

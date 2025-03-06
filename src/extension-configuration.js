@@ -40,6 +40,7 @@ export const newConfiguration = () => {
     },
     // Can't access the host Windows network from a Container
     // https://stackoverflow.com/questions/79098571/podman-container-cannot-connect-to-windows-host/79099459#79099459
+    // https://github.com/containers/podman/issues/14933
     // Workaround to add the WSL2 IP to the container's /etc/hosts
     additionalHosts: () => {
       if (!configuration.isWindows) {
