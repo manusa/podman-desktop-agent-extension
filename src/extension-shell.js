@@ -24,6 +24,15 @@ export const spawnShell = (file, args, {tty = false} = {}) => {
   }
 };
 
-export const makeAsync = async spawnedShell => {
+export const waitExit = async spawnedShell => {
   return new Promise(resolve => spawnedShell.onExit(resolve));
+};
+
+export const spawnShellSync = (file, args) => {
+  const {spawnSync} = require('node:child_process');
+  return spawnSync(file, args, {
+    shell: true,
+    cwd: process.env.HOME,
+    env: process.env
+  });
 };

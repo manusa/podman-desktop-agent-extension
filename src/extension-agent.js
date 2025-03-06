@@ -1,4 +1,4 @@
-import {makeAsync, spawnShell} from './extension-shell.js';
+import {spawnShell, waitExit} from './extension-shell.js';
 
 const agentContainerName = 'podman-desktop-agent-client';
 const agentImageName = 'quay.io/manusa/podman-desktop-agent-client:latest';
@@ -9,19 +9,23 @@ export const startAgentContainer = async ({configuration, ws}) => {
   ws.send('Greetings \x1B[1;3;31mProfessor Falken\x1B[0;0H\x1B[0m\n');
   ws.send('Starting Goose...\n');
   ws.send('\x1B[3;1H');
-  const imageExists = await makeAsync(
+  const imageExists = await waitExit(
     spawnShell(configuration.podmanCli, ['image', 'exists', agentImageName])
   );
   if (imageExists === 0) {
     ws.send('Agent image already exists\n');
   } else {
-    const pullImage = spawnShell(configuration.podmanCli, ['pull', agentImageName], {
-      tty: true
-    });
+    const pullImage = spawnShell(
+      configuration.podmanCli,
+      ['pull', agentImageName],
+      {
+        tty: true
+      }
+    );
     pullImage.onData(data => {
       ws.send(data);
     });
-    await makeAsync(pullImage);
+    await waitExit(pullImage);
   }
   return spawnShell(configuration.podmanCli, [
     'run',
@@ -29,6 +33,9 @@ export const startAgentContainer = async ({configuration, ws}) => {
     '--rm',
     '-ti',
     ...configuration.toEnv(),
+    ...configuration
+      .additionalHosts()
+      .map(h => `--add-host=host.containers.internal:${h}`),
     '--name',
     agentContainerName,
     '--replace',

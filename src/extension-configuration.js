@@ -1,3 +1,5 @@
+import {spawnShellSync} from './extension-shell.js';
+
 const extensionApi = require('@podman-desktop/api');
 const os = require('node:os');
 
@@ -35,6 +37,22 @@ export const newConfiguration = () => {
         '-e',
         `SSE_PORT=${configuration.mcpPort}`
       ];
+    },
+    // Can't access the host Windows network from a Container
+    // https://stackoverflow.com/questions/79098571/podman-container-cannot-connect-to-windows-host/79099459#79099459
+    // Workaround to add the WSL2 IP to the container's /etc/hosts
+    additionalHosts: () => {
+      if (!configuration.isWindows) {
+        return [];
+      }
+      const result = spawnShellSync('powershell.exe', [
+        `Get-NetIpAddress | where { $_.InterfaceAlias -Like '*WSL*' -and $_.AddressFamily -EQ 'IPv4' } | select -ExpandProperty IPAddress`
+      ]);
+      if (result.error || (result.stdout || '').trim() === '') {
+        console.error('Error getting WSL2 IP', result.error);
+        return [];
+      }
+      return result.stdout.trim();
     }
   };
   return configuration;
