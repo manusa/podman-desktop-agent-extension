@@ -39,10 +39,11 @@ export const deactivate = () => {
   console.log('Stopping Podman Desktop Agent extension');
   if (mcpServer) {
     console.log('Stopping MCP');
-    process.kill(mcpServer.pid);
     if (configuration.isWindows) {
-      // For some reason the process won't get killed on Windows
-      spawnShellSync('taskkill', ['/PID', mcpServer.pid, '/T', '/F']);
+      // For some reason the process exits but remains on Windows
+      spawnShellSync('taskkill.exe', [`/PID ${mcpServer.pid}`, '/T', '/F']);
+    } else {
+      process.kill(mcpServer.pid);
     }
   }
   if (webSocketServer) {

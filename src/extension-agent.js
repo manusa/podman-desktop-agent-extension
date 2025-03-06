@@ -9,6 +9,7 @@ export const startAgentContainer = async ({configuration, ws}) => {
   ws.send('Greetings \x1B[1;3;31mProfessor Falken\x1B[0;0H\x1B[0m\n');
   ws.send('Starting Goose...\n');
   ws.send('\x1B[3;1H');
+  console.log(`Pulling image ${agentImageName} in case it doesn't exist`);
   const imageExists = await waitExit(
     spawnShell(configuration.podmanCli, ['image', 'exists', agentImageName])
   );
@@ -27,7 +28,7 @@ export const startAgentContainer = async ({configuration, ws}) => {
     });
     await waitExit(pullImage);
   }
-  return spawnShell(configuration.podmanCli, [
+  const args = [
     'run',
     '--tty',
     '--rm',
@@ -40,7 +41,11 @@ export const startAgentContainer = async ({configuration, ws}) => {
     agentContainerName,
     '--replace',
     agentImageName
-  ]);
+  ];
+  console.log(
+    `Starting agent container with: ${configuration.podmanCli} ${args.join(' ')}`
+  );
+  return spawnShell(configuration.podmanCli, args);
 };
 
 export const stopAgentContainer = ({configuration}) => {
