@@ -46,13 +46,13 @@ export const newConfiguration = () => {
         return [];
       }
       const result = spawnShellSync('powershell.exe', [
-        `Get-NetIpAddress | where { $_.InterfaceAlias -Like '*WSL*' -and $_.AddressFamily -EQ 'IPv4' } | select -ExpandProperty IPAddress`
+        `"Get-NetIpAddress | where { $_.InterfaceAlias -Like '*WSL*' -and $_.AddressFamily -EQ 'IPv4' } | select -ExpandProperty IPAddress"`
       ]);
-      if (result.error || (result.stdout || '').trim() === '') {
+      if (result.error || result.stdout.toString().trim() === '') {
         console.error('Error getting WSL2 IP', result.error);
         return [];
       }
-      return result.stdout.trim();
+      return [result.stdout.toString().trim()];
     }
   };
   return configuration;
