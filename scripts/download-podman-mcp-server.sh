@@ -23,7 +23,7 @@ do
     if [ "$os" == "windows" ]; then
       filename="$filename.exe"
     fi
-    curl -L -o "./dist/$filename" "https://github.com/manusa/podman-mcp-server/releases/download/v$1/$filename"
+    curl -L --fail -o "./dist/$filename" "https://github.com/manusa/podman-mcp-server/releases/download/v$1/$filename"
     chmod +x "./dist/$filename"
   done
 done
