@@ -24,6 +24,7 @@ export const startAgentContainer = async ({configuration, ws}) => {
       }
     );
     pullImage.onData(data => {
+      console.log(data);
       ws.send(data);
     });
     await waitExit(pullImage);
