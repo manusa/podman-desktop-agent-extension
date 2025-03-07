@@ -1,7 +1,6 @@
-import {spawnShellSync} from './extension-shell.js';
-
 const extensionApi = require('@podman-desktop/api');
 const os = require('node:os');
+import {spawnShellSync} from './extension-shell.js';
 
 export const newConfiguration = () => {
   const configuration = {
@@ -9,6 +8,13 @@ export const newConfiguration = () => {
     isWindows: os.platform() === 'win32',
     podmanCli: os.platform() === 'win32' ? 'podman.exe' : 'podman',
     load: async () => {
+      // Find container engine
+      const connections = extensionApi.provider.getContainerConnections() || [];
+      configuration.containerConnection = connections.find(c => c.connection.type === 'podman');
+      if (!configuration.containerConnection && connections.length > 0) {
+        configuration.containerConnection = connections[0];
+      }
+      ////////////////////////
       configuration.provider = await extensionApi.configuration
         .getConfiguration('agent.goose')
         .get('provider');

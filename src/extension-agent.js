@@ -1,33 +1,38 @@
+const extensionApi = require('@podman-desktop/api');
+
 import {spawnShell, waitExit} from './extension-shell.js';
 
 const agentContainerName = 'podman-desktop-agent-client';
 const agentImageName = 'quay.io/manusa/podman-desktop-agent-client:latest';
+// https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
+const ansiLineBreak = '\n\x1B[1G';
 
 export const startAgentContainer = async ({configuration, ws}) => {
   // User might have changed the configuration but the extension is not reloaded
   await configuration.load();
-  ws.send('Greetings \x1B[1;3;31mProfessor Falken\x1B[0;0H\x1B[0m\n');
-  ws.send('Starting Goose...\n');
-  ws.send('\x1B[3;1H');
-  console.log(`Pulling image ${agentImageName} in case it doesn't exist`);
-  const imageExists = await waitExit(
-    spawnShell(configuration.podmanCli, ['image', 'exists', agentImageName])
-  );
-  if (imageExists === 0) {
-    ws.send('Agent image already exists\n');
+  ws.send(`Greetings \x1B[1;3;31mProfessor Falken\x1B[0m${ansiLineBreak}`);
+  ws.send(`Starting Goose...${ansiLineBreak}`);
+  if (!configuration.containerConnection) {
+    ws.send(`No Container engine found${ansiLineBreak}`);
+    return;
+  }
+  const images = await extensionApi.containerEngine
+    .listImages({provider: configuration.containerConnection.connection});
+  let imageExists = false;
+  images.forEach(image => {
+    if (image.RepoTags.some(rt => rt === agentImageName)) {
+      imageExists = true;
+    }
+  });
+  if (imageExists) {
+    ws.send(`Agent image exists, starting Goose now!${ansiLineBreak}`);
   } else {
-    const pullImage = spawnShell(
-      configuration.podmanCli,
-      ['pull', agentImageName],
-      {
-        tty: true
-      }
+    ws.send(`Pulling image ${agentImageName}${ansiLineBreak}`);
+    await extensionApi.containerEngine.pullImage(
+      configuration.containerConnection.connection,
+      agentImageName,
+      pe => ws.send(`${pe.status} ${pe.progress ?? ''}${ansiLineBreak}`)
     );
-    pullImage.onData(data => {
-      console.log(data);
-      ws.send(data);
-    });
-    await waitExit(pullImage);
   }
   const args = [
     'run',
