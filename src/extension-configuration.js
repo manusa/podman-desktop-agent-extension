@@ -3,6 +3,9 @@ const os = require('node:os');
 import {spawnShellSync} from './extension-shell.js';
 
 export const newConfiguration = () => {
+  // TODO: From exposed in main world
+  // window.listImages().then(console.log);
+  //////
   const configuration = {
     mcpHost: 'host.containers.internal',
     isWindows: os.platform() === 'win32',
@@ -10,10 +13,16 @@ export const newConfiguration = () => {
     load: async () => {
       // Find container engine
       const connections = extensionApi.provider.getContainerConnections() || [];
-      configuration.containerConnection = connections.find(c => c.connection.type === 'podman');
+      configuration.containerConnection = connections.find(
+        c => c.connection.type === 'podman'
+      );
       if (!configuration.containerConnection && connections.length > 0) {
         configuration.containerConnection = connections[0];
       }
+      console.log(
+        'Container connection:',
+        configuration.containerConnection.connection.shellAccess
+      );
       ////////////////////////
       configuration.provider = await extensionApi.configuration
         .getConfiguration('agent.goose')

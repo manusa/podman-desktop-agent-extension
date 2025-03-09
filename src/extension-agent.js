@@ -1,6 +1,6 @@
 const extensionApi = require('@podman-desktop/api');
 
-import {spawnShell, waitExit} from './extension-shell.js';
+import {spawnShell} from './extension-shell.js';
 
 const agentContainerName = 'podman-desktop-agent-client';
 const agentImageName = 'quay.io/manusa/podman-desktop-agent-client:latest';
@@ -16,8 +16,9 @@ export const startAgentContainer = async ({configuration, ws}) => {
     ws.send(`No Container engine found${ansiLineBreak}`);
     return;
   }
-  const images = await extensionApi.containerEngine
-    .listImages({provider: configuration.containerConnection.connection});
+  const images = await extensionApi.containerEngine.listImages({
+    provider: configuration.containerConnection.connection
+  });
   let imageExists = false;
   images.forEach(image => {
     if (image.RepoTags.some(rt => rt === agentImageName)) {
