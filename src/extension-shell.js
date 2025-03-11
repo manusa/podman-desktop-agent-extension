@@ -1,7 +1,21 @@
-export const spawnShell = (file, args, {tty = false} = {}) => {
-  Object.entries(process.env)
-    .filter(([k]) => k === 'PATH' || k === 'HOME')
-    .forEach(([k, v]) => console.log(`${k}: ${v}`));
+const fs = require('node:fs');
+const os = require('node:os');
+
+// Run the shell command in bash so that any .bashrc or .bash_profile settings are applied
+const preferBash = ({file, args}) => {
+  if (os.platform() !== 'win32') {
+    try {
+      fs.statSync('/bin/bash');
+      return {file: '/bin/bash', args: ['-c', `"${file} ${args.join(' ')}"`]};
+    } catch {
+      // No bash, just return the original command
+    }
+  }
+  return {file, args};
+};
+
+export const spawnShell = (originalFile, originalArgs, {tty = false} = {}) => {
+  const {file, args} = preferBash({file: originalFile, args: originalArgs});
   const {spawn} = require('node:child_process');
   const spawnProcess = spawn(file, args, {
     shell: true,
@@ -29,11 +43,8 @@ export const spawnShell = (file, args, {tty = false} = {}) => {
   };
 };
 
-export const waitExit = async spawnedShell => {
-  return new Promise(resolve => spawnedShell.onExit(resolve));
-};
-
-export const spawnShellSync = (file, args) => {
+export const spawnShellSync = (originalFile, originalArgs) => {
+  const {file, args} = preferBash({file: originalFile, args: originalArgs});
   const {spawnSync} = require('node:child_process');
   return spawnSync(file, args, {
     shell: true,
