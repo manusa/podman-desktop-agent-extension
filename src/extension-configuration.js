@@ -18,7 +18,7 @@ export const newConfiguration = () => {
       }
       console.log(
         'Container connection:',
-        configuration.containerConnection.connection.shellAccess
+        configuration.containerConnection?.connection?.type ?? 'none'
       );
       ////////////////////////
       configuration.provider = await extensionApi.configuration
