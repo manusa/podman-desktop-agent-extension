@@ -6,7 +6,11 @@ const preferBash = ({file, args}) => {
   if (os.platform() !== 'win32') {
     try {
       fs.statSync('/bin/bash');
-      return {file: '/bin/bash', args: ['-c', `"${file} ${args.join(' ')}"`]};
+      return {
+        file: '/bin/bash',
+        args: ['-c', `"${file} ${args.join(' ')}"`],
+        shell: '/bin/bash'
+      };
     } catch {
       // No bash, just return the original command
     }
@@ -15,11 +19,14 @@ const preferBash = ({file, args}) => {
 };
 
 export const spawnShell = (originalFile, originalArgs, {tty = false} = {}) => {
-  const {file, args} = preferBash({file: originalFile, args: originalArgs});
+  const {file, args, shell} = preferBash({
+    file: originalFile,
+    args: originalArgs
+  });
   const {spawn} = require('node:child_process');
   console.log(`Spawning ${file} ${args.join(' ')}`);
   const spawnProcess = spawn(file, args, {
-    shell: true,
+    shell,
     cwd: process.env.HOME,
     env: process.env
   });
@@ -45,11 +52,14 @@ export const spawnShell = (originalFile, originalArgs, {tty = false} = {}) => {
 };
 
 export const spawnShellSync = (originalFile, originalArgs) => {
-  const {file, args} = preferBash({file: originalFile, args: originalArgs});
+  const {file, args, shell} = preferBash({
+    file: originalFile,
+    args: originalArgs
+  });
   const {spawnSync} = require('node:child_process');
   console.log(`Spawning sync ${file} ${args.join(' ')}`);
   return spawnSync(file, args, {
-    shell: true,
+    shell,
     cwd: process.env.HOME,
     env: process.env
   });
