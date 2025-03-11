@@ -22,6 +22,12 @@ export const activate = async extensionContext => {
   );
   extensionContext.subscriptions.push(wvp);
   await configuration.load();
+  // TODO: Log environment
+  // REMOVE
+  const {output} = spawnShellSync('env');
+  Array.from(output).filter(o => o != null).map(o => o.toString())
+    .forEach(console.log);
+  ////
   mcpServer = startMcpServer({configuration, extensionContext});
   webSocketServer = startWebSocketServer(configuration);
   // Set up the webview
