@@ -19,8 +19,8 @@ term.loadAddon(new AttachAddon(ws));
 term.focus();
 
 term.resizeEventListener = () => {
-  fitAddon.fit();
-  setTimeout(fitAddon.fit, 100);
+  fitAddon.fit.call(fitAddon);
+  setTimeout(() => fitAddon.fit.call(fitAddon), 100);
 };
 
 window.addEventListener('resize', term.resizeEventListener);
