@@ -5,17 +5,28 @@ const os = require('node:os');
 const preferBash = ({file, args}) => {
   let shell;
   if (os.platform() !== 'win32') {
-    try {
-      fs.statSync('/bin/bash');
-      shell = '/bin/bash';
-    } catch {
-      // No bash, just return the original command
+    const candidates = ['/bin/bash', '/usr/bin/bash'];
+    if (process.env.SHELL) {
+      candidates.unshift(process.env.SHELL);
+    }
+    for (const candidate of candidates) {
+      try {
+        fs.statSync(candidate);
+        shell = candidate;
+        break;
+      } catch {
+        // No bash, try the next one
+      }
     }
   }
   return {file, args, shell};
 };
 
-export const spawnShell = (originalFile,  originalArgs = [], {tty = false} = {}) => {
+export const spawnShell = (
+  originalFile,
+  originalArgs = [],
+  {tty = false} = {}
+) => {
   const {file, args, shell} = preferBash({
     file: originalFile,
     args: originalArgs

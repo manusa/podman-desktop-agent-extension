@@ -25,7 +25,9 @@ export const activate = async extensionContext => {
   // TODO: Log environment
   // REMOVE
   const {output} = spawnShellSync('env');
-  Array.from(output).filter(o => o != null).map(o => o.toString())
+  Array.from(output)
+    .filter(o => o != null)
+    .map(o => o.toString())
     .forEach(console.log);
   ////
   mcpServer = startMcpServer({configuration, extensionContext});
