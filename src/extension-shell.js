@@ -17,6 +17,7 @@ const preferBash = ({file, args}) => {
 export const spawnShell = (originalFile, originalArgs, {tty = false} = {}) => {
   const {file, args} = preferBash({file: originalFile, args: originalArgs});
   const {spawn} = require('node:child_process');
+  console.log(`Spawning ${file} ${args.join(' ')}`);
   const spawnProcess = spawn(file, args, {
     shell: true,
     cwd: process.env.HOME,
@@ -46,6 +47,7 @@ export const spawnShell = (originalFile, originalArgs, {tty = false} = {}) => {
 export const spawnShellSync = (originalFile, originalArgs) => {
   const {file, args} = preferBash({file: originalFile, args: originalArgs});
   const {spawnSync} = require('node:child_process');
+  console.log(`Spawning sync ${file} ${args.join(' ')}`);
   return spawnSync(file, args, {
     shell: true,
     cwd: process.env.HOME,

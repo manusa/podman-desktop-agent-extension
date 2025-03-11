@@ -24,7 +24,7 @@ export const startMcpServer = ({configuration, extensionContext}) => {
     configuration.mcpHost
   ];
   console.log(
-    `Starting Podman MCP server at ${binaryName} in port ${configuration.mcpPort} with: ${executablePath} ${args.join(' ')}`
+    `Starting Podman MCP server at ${binaryName} in port ${configuration.mcpPort}`
   );
   const mcpServer = spawnShell(executablePath, args);
   mcpServer.onExit(code => {
