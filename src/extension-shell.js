@@ -3,7 +3,7 @@ const os = require('node:os');
 
 // Run the shell command in bash so that any .bashrc or .bash_profile settings are applied
 const preferBash = ({file, args}) => {
-  let shell;
+  let shell = true;
   if (os.platform() !== 'win32') {
     const candidates = ['/bin/bash', '/usr/bin/bash'];
     if (process.env.SHELL) {
@@ -12,7 +12,10 @@ const preferBash = ({file, args}) => {
     for (const candidate of candidates) {
       try {
         fs.statSync(candidate);
-        shell = candidate;
+        shell = candidate
+        // -l to make bash act as if it had been invoked as a login shell (load .bashrc)
+        args = ['-l', '-c', `"${file} ${args.join(' ')}"`];
+        file = candidate;
         break;
       } catch {
         // No bash, try the next one
