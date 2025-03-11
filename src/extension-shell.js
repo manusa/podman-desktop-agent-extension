@@ -1,4 +1,7 @@
 export const spawnShell = (file, args, {tty = false} = {}) => {
+  Object.entries(process.env)
+    .filter(([k]) => k === 'PATH' || k === 'HOME')
+    .forEach(([k, v]) => console.log(`${k}: ${v}`));
   const {spawn} = require('node:child_process');
   const spawnProcess = spawn(file, args, {
     shell: true,

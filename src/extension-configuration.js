@@ -3,9 +3,6 @@ const os = require('node:os');
 import {spawnShellSync} from './extension-shell.js';
 
 export const newConfiguration = () => {
-  // TODO: From exposed in main world
-  // window.listImages().then(console.log);
-  //////
   const configuration = {
     mcpHost: 'host.containers.internal',
     isWindows: os.platform() === 'win32',
