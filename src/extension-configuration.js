@@ -11,7 +11,7 @@ export const newConfiguration = () => {
       // Find container engine
       const connections = extensionApi.provider.getContainerConnections() || [];
       configuration.containerConnection = connections.find(
-        c => c.connection.type === 'podman'
+        c => c && c.connection && c.connection.type === 'podman'
       );
       if (!configuration.containerConnection && connections.length > 0) {
         configuration.containerConnection = connections[0];
