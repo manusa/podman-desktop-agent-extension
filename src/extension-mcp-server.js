@@ -17,15 +17,16 @@ export const startMcpServer = ({configuration, extensionContext}) => {
     binaryName
   );
   const executablePath = executableUri.fsPath;
-  console.log(
-    `Starting Podman MCP server at ${binaryName} in port ${configuration.mcpPort}`
-  );
-  const mcpServer = spawnShell(executablePath, [
+  const args = [
     '--sse-port',
     configuration.mcpPort,
     '--sse-public-host',
     configuration.mcpHost
-  ]);
+  ];
+  console.log(
+    `Starting Podman MCP server at ${binaryName} in port ${configuration.mcpPort} with: ${executablePath} ${args.join(' ')}`
+  );
+  const mcpServer = spawnShell(executablePath, args);
   mcpServer.onExit(code => {
     console.log(`Podman MCP server exited with code ${code}`);
   });
