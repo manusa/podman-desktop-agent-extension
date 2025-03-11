@@ -12,7 +12,7 @@ const preferBash = ({file, args}) => {
     for (const candidate of candidates) {
       try {
         fs.statSync(candidate);
-        shell = candidate
+        shell = candidate;
         // -l to make bash act as if it had been invoked as a login shell (load .bashrc)
         args = ['-l', '-c', `"${file} ${args.join(' ')}"`];
         file = candidate;

@@ -1,5 +1,5 @@
-const extensionApi = require('@podman-desktop/api');
-const os = require('node:os');
+import extensionApi from '@podman-desktop/api';
+import os from 'node:os';
 import {spawnShellSync} from './extension-shell.js';
 
 export const newConfiguration = () => {

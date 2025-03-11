@@ -9,6 +9,9 @@ export default defineConfig({
   build: {
     outDir: resolve(__dirname, 'dist'),
     emptyOutDir: false,
+    rollupOptions: {
+      external: ['@podman-desktop/api', 'node:os'],
+    },
     lib: {
       entry: resolve(__dirname, 'src', 'extension.js'),
       formats: ['cjs'],

@@ -66,6 +66,8 @@ jobs:
         run: npm install
       - name: Build
         run: npm run build
+      - name: Test
+        run: npm test
       - name: Prune dev Node Modules
         run: npm prune --production
       - name: Quay Login
