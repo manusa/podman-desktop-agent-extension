@@ -1,7 +1,4 @@
-import {replaceNodeModules} from './extension-setup.js';
-replaceNodeModules();
-const extensionApi = require('@podman-desktop/api');
-
+import extensionApi from '@podman-desktop/api';
 import {resourceLoader, uriFixer} from './extension-util';
 import {newConfiguration} from './extension-configuration';
 import {startMcpServer} from './extension-mcp-server.js';

@@ -12,26 +12,6 @@ env:
   TAG: latest
 
 jobs:
-  node-modules-windows-x64:
-    name: 'Node Modules: Windows x64'
-    runs-on: windows-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-      - name: Install Node Modules
-        run: |
-          npm install --production
-          Remove-Item -Path node_modules_windows_x64 -Recurse -Force
-          Rename-Item -Path node_modules -NewName node_modules_windows_x64
-      - name: Store Node Modules
-        uses: actions/upload-artifact@v4
-        with:
-          name: node_modules_windows_x64
-          path: node_modules_windows_x64
-
   publish-platform-images:
     name: 'Publish: linux-${{ matrix.platform.tag }}'
     strategy:
@@ -43,7 +23,6 @@ jobs:
           - runner: ubuntu-24.04-arm
             tag: arm64
     runs-on: ${{ matrix.platform.runner }}
-    needs: node-modules-windows-x64
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -57,11 +36,6 @@ jobs:
       - name: Download Podman MCP Server
         run: |
           ./scripts/download-podman-mcp-server.sh ${{ env.PODMAN_MCP_SERVER_VERSION }}
-      - name: Download Node Modules Windows x64
-        uses: actions/download-artifact@v4
-        with:
-          name: node_modules_windows_x64
-          path: node_modules_windows_x64
       - name: Install Node Modules
         run: npm install
       - name: Build
