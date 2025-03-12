@@ -13,23 +13,22 @@ let mcpServer;
 const configuration = newConfiguration();
 
 export const activate = async extensionContext => {
+  await configuration.load();
+  mcpServer = startMcpServer({configuration, extensionContext});
+  webSocketServer = startWebSocketServer(configuration);
+  // Set up the statusbar
+  const statusBar = extensionApi.window.createStatusBarItem();
+  extensionContext.subscriptions.push(statusBar);
+  statusBar.text = `MCP Server: ${configuration.mcpPort}`;
+  statusBar.tooltip = `MCP Server listening on http://${configuration.mcpPort}/sse`;
+  statusBar.iconClass = 'fa fa-plug';
+  statusBar.show();
+  // Set up the webview
   const wvp = extensionApi.window.createWebviewPanel(
     'podmanDesktopAgent',
     'Agent'
   );
   extensionContext.subscriptions.push(wvp);
-  await configuration.load();
-  // TODO: Log environment
-  // REMOVE
-  const {output} = spawnShellSync('env');
-  Array.from(output)
-    .filter(o => o != null)
-    .map(o => o.toString())
-    .forEach(console.log);
-  ////
-  mcpServer = startMcpServer({configuration, extensionContext});
-  webSocketServer = startWebSocketServer(configuration);
-  // Set up the webview
   const loadResource = resourceLoader(extensionContext);
   const fixResource = uriFixer({extensionContext, webView: wvp.webview});
   let indexHtml = fixResource(await loadResource(indexPathSegments));
