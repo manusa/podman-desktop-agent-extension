@@ -2,7 +2,7 @@ import extensionApi from '@podman-desktop/api';
 import {resourceLoader, uriFixer} from './extension-util';
 import {newConfiguration} from './extension-configuration';
 import {startMcpServer} from './extension-mcp-server.js';
-import {startWebSocketServer} from './extension-ws-server';
+import {startWebSocketServer} from './extension-net';
 import {spawnShellSync} from './extension-shell.js';
 
 const indexPathSegments = ['dist', 'browser', 'index.html'];

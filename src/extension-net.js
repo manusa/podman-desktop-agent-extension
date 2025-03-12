@@ -4,6 +4,14 @@ import {WebSocketServer} from 'ws';
 import {startAgentContainer, stopAgentContainer} from './extension-agent';
 import {ansiLineBreak} from './extension-ansi';
 
+export const findFreePort = async () => {
+  const server = http.createServer();
+  await new Promise(resolve => server.listen(0, resolve));
+  const port = server.address().port;
+  server.close();
+  return port;
+};
+
 export const startWebSocketServer = configuration => {
   const app = express();
   const webSocketServer = http.createServer(app);
