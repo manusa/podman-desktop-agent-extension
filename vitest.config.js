@@ -2,6 +2,7 @@ import path from 'node:path';
 
 const config = {
   test: {
+    setupFiles: ['./src/__tests__/setup.js'],
   },
   mockReset: true,
   resolve: {

@@ -1,20 +1,15 @@
-const extensionApi = require('@podman-desktop/api');
-
+import extensionApi from '@podman-desktop/api';
+import {ansiLineBreak} from './extension-ansi';
 import {spawnShell} from './extension-shell.js';
 
 const agentContainerName = 'podman-desktop-agent-client';
 const agentImageName = 'quay.io/manusa/podman-desktop-agent-client:latest';
-// https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
-const ansiLineBreak = '\n\x1B[1G';
 
 export const startAgentContainer = async ({configuration, ws}) => {
   // User might have changed the configuration but the extension is not reloaded
   await configuration.load();
-  ws.send(`Greetings \x1B[1;3;31mProfessor Falken\x1B[0m${ansiLineBreak}`);
-  ws.send(`Starting Goose...${ansiLineBreak}`);
   if (!configuration.containerConnection) {
-    ws.send(`No Container engine found${ansiLineBreak}`);
-    return;
+    throw new Error('No Container engine found');
   }
   const images = await extensionApi.containerEngine.listImages({
     provider: configuration.containerConnection.connection
