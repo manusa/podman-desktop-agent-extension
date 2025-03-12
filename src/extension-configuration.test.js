@@ -100,5 +100,15 @@ describe('extension-configuration', () => {
         expect(configuration.mcpPort).toBe(313373);
       });
     });
+    test.each([
+      {section: 'agent.goose', key: 'provider', value: 'google', config: 'provider'},
+      {section: 'agent.goose', key: 'model', value: 'gemini-1337', config: 'model'},
+      {section: 'agent.goose.provider.gemini', key: 'googleApiKey', value: '313373', config: 'googleApiKey'},
+      {section: 'agent.mcp', key: 'port', value: 1337, config: 'publicMcpPort'}
+    ])('Sets $config from configuration', async ({section, key, value, config}) => {
+      extensionApi.configuration.mockedSections[section] = {[key]: value};
+      await configuration.load();
+      expect(configuration[config]).toBe(value);
+    });
   });
 });

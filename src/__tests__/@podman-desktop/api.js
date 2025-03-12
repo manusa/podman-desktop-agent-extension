@@ -1,7 +1,8 @@
 import {vi} from 'vitest';
 const api = {
   configuration: {
-    getConfiguration: vi.fn(() => ({get: vi.fn()}))
+    mockedSections: {},
+    getConfiguration: vi.fn(section => ({get: vi.fn(subsection => api.configuration.mockedSections[section]?.[subsection])}))
   },
   provider: {
     getContainerConnections: vi.fn()
