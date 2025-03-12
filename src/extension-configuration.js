@@ -5,7 +5,12 @@ import {spawnShellSync} from './extension-shell';
 
 export const newConfiguration = () => {
   const configuration = {
+    // Internal (to be used from within a container) Podman MCP server host
     mcpHost: 'host.containers.internal',
+    // Internal (to be used from within a container) Podman MCP server port
+    mcpPort: null,
+    publicMcpHost: 'localhost',
+    publicMcpPort: null,
     isWindows: os.platform() === 'win32',
     podmanCli: os.platform() === 'win32' ? 'podman.exe' : 'podman',
     load: async () => {
@@ -31,10 +36,12 @@ export const newConfiguration = () => {
       configuration.googleApiKey = await extensionApi.configuration
         .getConfiguration('agent.goose.provider.gemini')
         .get('googleApiKey');
-      configuration.mcpPort = await findFreePort();
-      // configuration.mcpPort = await extensionApi.configuration
-      //   .getConfiguration('agent.mcp')
-      //   .get('port');
+      if (!configuration.mcpPort) {
+        configuration.mcpPort = await findFreePort();
+      }
+      configuration.publicMcpPort = await extensionApi.configuration
+        .getConfiguration('agent.mcp')
+        .get('port');
     },
     toEnv: () => {
       return [

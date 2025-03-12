@@ -87,9 +87,16 @@ describe('extension-configuration', () => {
         expect(configuration.containerConnection.providerId).toBe('docker-1');
       });
     });
-    test('Sets mcpPort to a free port', async () => {
-      await configuration.load();
-      expect(configuration.mcpPort).toBeGreaterThan(0);
+    describe('mcpPort', () => {
+      test('Sets mcpPort to a free random port', async () => {
+        await configuration.load();
+        expect(configuration.mcpPort).toBeGreaterThan(0);
+      });
+      test('Does not change mcpPort once is set', async () => {
+        configuration.mcpPort = 313373;
+        await configuration.load();
+        expect(configuration.mcpPort).toBe(313373);
+      });
     });
   });
 });
