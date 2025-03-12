@@ -1,6 +1,6 @@
-const os = require('node:os');
-const extensionApi = require('@podman-desktop/api');
-import {spawnShell} from './extension-shell.js';
+import extensionApi from '@podman-desktop/api';
+import os from 'node:os';
+import {spawnShell} from './extension-shell';
 
 export const startMcpServer = ({configuration, extensionContext}) => {
   let binaryName = 'podman-mcp-server-';
@@ -10,7 +10,7 @@ export const startMcpServer = ({configuration, extensionContext}) => {
     binaryName += os.platform();
   }
   binaryName += os.arch() === 'x64' ? '-amd64' : '-arm64';
-  binaryName += os.platform() === 'win32' ? '.exe' : '';
+  binaryName += configuration.isWindows ? '.exe' : '';
   const executableUri = extensionApi.Uri.joinPath(
     extensionContext.extensionUri,
     'dist',

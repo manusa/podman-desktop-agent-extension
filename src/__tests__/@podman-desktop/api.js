@@ -5,6 +5,9 @@ const api = {
   },
   provider: {
     getContainerConnections: vi.fn()
+  },
+  Uri: {
+    joinPath: vi.fn((uri, ...paths) => ({fsPath: paths.join('/')}))
   }
 };
 export default api;

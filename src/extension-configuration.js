@@ -1,6 +1,7 @@
 import extensionApi from '@podman-desktop/api';
 import os from 'node:os';
-import {spawnShellSync} from './extension-shell.js';
+import {findFreePort} from './extension-net';
+import {spawnShellSync} from './extension-shell';
 
 export const newConfiguration = () => {
   const configuration = {
@@ -30,9 +31,10 @@ export const newConfiguration = () => {
       configuration.googleApiKey = await extensionApi.configuration
         .getConfiguration('agent.goose.provider.gemini')
         .get('googleApiKey');
-      configuration.mcpPort = await extensionApi.configuration
-        .getConfiguration('agent.mcp')
-        .get('port');
+      configuration.mcpPort = await findFreePort();
+      // configuration.mcpPort = await extensionApi.configuration
+      //   .getConfiguration('agent.mcp')
+      //   .get('port');
     },
     toEnv: () => {
       return [

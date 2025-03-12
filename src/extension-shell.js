@@ -1,5 +1,6 @@
-const fs = require('node:fs');
-const os = require('node:os');
+import {spawn, spawnSync} from 'node:child_process';
+import fs from 'node:fs';
+import os from 'node:os';
 
 // Run the shell command in bash so that any .bashrc or .bash_profile settings are applied
 const preferBash = ({file, args}) => {
@@ -34,7 +35,6 @@ export const spawnShell = (
     file: originalFile,
     args: originalArgs
   });
-  const {spawn} = require('node:child_process');
   console.log(`Spawning ${file} ${args.join(' ')} (shell: ${shell})`);
   const spawnProcess = spawn(file, args, {
     shell,
@@ -67,7 +67,6 @@ export const spawnShellSync = (originalFile, originalArgs = []) => {
     file: originalFile,
     args: originalArgs
   });
-  const {spawnSync} = require('node:child_process');
   console.log(`Spawning sync ${file} ${args.join(' ')} (shell: ${shell})`);
   return spawnSync(file, args, {
     shell,

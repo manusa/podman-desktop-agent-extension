@@ -87,5 +87,9 @@ describe('extension-configuration', () => {
         expect(configuration.containerConnection.providerId).toBe('docker-1');
       });
     });
+    test('Sets mcpPort to a free port', async () => {
+      await configuration.load();
+      expect(configuration.mcpPort).toBeGreaterThan(0);
+    });
   });
 });
