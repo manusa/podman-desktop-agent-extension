@@ -32,13 +32,15 @@ describe('extension-configuration', () => {
         expect(configuration.podmanCli).toBe('podman');
       });
     });
-    describe('adds common fields', () => {
+    describe('sets common fields', () => {
       beforeEach(() => {
-        vi.mocked(os.platform).mockReturnValue('linux');
         configuration = newConfiguration();
       });
       test('Sets mcpHost to "host.containers.internal"', () => {
         expect(configuration.mcpHost).toBe('host.containers.internal');
+      });
+      test('Sets publicMcpHost to "localhost"', () => {
+        expect(configuration.publicMcpHost).toBe('localhost');
       });
     });
   });
