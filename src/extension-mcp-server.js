@@ -20,8 +20,6 @@ export const startMcpServer = ({configuration, extensionContext}) => {
   const args = [
     '--sse-port',
     configuration.mcpPort,
-    '--sse-public-host',
-    configuration.mcpHost
   ];
   console.log(
     `Starting Podman MCP server at ${binaryName} in port ${configuration.mcpPort}`

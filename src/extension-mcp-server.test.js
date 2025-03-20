@@ -66,5 +66,15 @@ describe('extension-mcp-server', () => {
         );
       }
     );
+    test('adds --sse-port to args', () => {
+      configuration = newConfiguration();
+      configuration.mcpPort = 1337;
+      startMcpServer({configuration, extensionContext});
+      expect(spawn).toHaveBeenCalledWith(
+        expect.any(String),
+        ['--sse-port', 1337],
+        expect.any(Object)
+      );
+    });
   });
 });
