@@ -52,5 +52,10 @@ export const startWebSocketServer = configuration => {
       `Websocket server started on port ${webSocketServer.address().port}`
     );
   });
+  const originalClose = webSocketServer.close;
+  webSocketServer.close = () => {
+    console.log('Closing WebSocket server');
+    originalClose.call(webSocketServer);
+  };
   return webSocketServer;
 };

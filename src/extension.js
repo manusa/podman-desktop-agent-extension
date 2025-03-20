@@ -3,7 +3,6 @@ import {resourceLoader, uriFixer} from './extension-util';
 import {newConfiguration} from './extension-configuration';
 import {startMcpServer} from './extension-mcp-server.js';
 import {startWebSocketServer} from './extension-net';
-import {spawnShellSync} from './extension-shell.js';
 
 const indexPathSegments = ['dist', 'browser', 'index.html'];
 
@@ -11,16 +10,33 @@ let webSocketServer;
 let mcpServer;
 
 const configuration = newConfiguration();
+extensionApi.configuration.onDidChangeConfiguration(async event => {
+  if (event.affectsConfiguration('agent.mcp')) {
+    await configuration.load();
+    if (
+      mcpServer &&
+      parseInt(mcpServer.port) !== parseInt(configuration.mcpPort)
+    ) {
+      mcpServer.close();
+      mcpServer = startMcpServer({
+        configuration,
+        extensionContext: mcpServer.extensionContext
+      });
+      statusBar.text = `MCP Server: ${configuration.mcpPort}`;
+      statusBar.tooltip = `MCP Server listening on http://localhost:${configuration.mcpPort}/sse`;
+    }
+  }
+});
+const statusBar = extensionApi.window.createStatusBarItem();
 
 export const activate = async extensionContext => {
   await configuration.load();
   mcpServer = startMcpServer({configuration, extensionContext});
   webSocketServer = startWebSocketServer(configuration);
   // Set up the statusbar
-  const statusBar = extensionApi.window.createStatusBarItem();
   extensionContext.subscriptions.push(statusBar);
   statusBar.text = `MCP Server: ${configuration.mcpPort}`;
-  statusBar.tooltip = `MCP Server listening on http://${configuration.mcpPort}/sse`;
+  statusBar.tooltip = `MCP Server listening on http://localhost:${configuration.mcpPort}/sse`;
   statusBar.iconClass = 'fa fa-plug';
   statusBar.show();
   // Set up the webview
@@ -42,16 +58,9 @@ export const activate = async extensionContext => {
 export const deactivate = () => {
   console.log('Stopping Podman Desktop Agent extension');
   if (mcpServer) {
-    console.log('Stopping MCP');
-    if (configuration.isWindows) {
-      // For some reason the process exits but remains on Windows
-      spawnShellSync('taskkill.exe', [`/PID ${mcpServer.pid}`, '/T', '/F']);
-    } else {
-      process.kill(mcpServer.pid);
-    }
+    mcpServer.close();
   }
   if (webSocketServer) {
-    console.log('Stopping Web Socket Server');
     webSocketServer.close();
   }
 };

@@ -6,7 +6,8 @@ const api = {
       get: vi.fn(
         subsection => api.configuration.mockedSections[section]?.[subsection]
       )
-    }))
+    })),
+    onDidChangeConfiguration: vi.fn()
   },
   provider: {
     getContainerConnections: vi.fn()

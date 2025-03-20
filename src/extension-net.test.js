@@ -43,5 +43,18 @@ describe('extension-net', () => {
         );
       });
     });
+    describe('close()', () => {
+      let server;
+      beforeEach(async () => {
+        server = await startWebSocketServer(configuration);
+        server.close();
+      });
+      test('logs closing WebSocket server', () => {
+        expect(console.logs).toContain('Closing WebSocket server');
+      });
+      test('closes the server', () => {
+        expect(server.listening).toBe(false);
+      });
+    });
   });
 });

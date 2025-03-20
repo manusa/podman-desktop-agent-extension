@@ -39,9 +39,6 @@ describe('extension-configuration', () => {
       test('Sets mcpHost to "host.containers.internal"', () => {
         expect(configuration.mcpHost).toBe('host.containers.internal');
       });
-      test('Sets publicMcpHost to "localhost"', () => {
-        expect(configuration.publicMcpHost).toBe('localhost');
-      });
     });
   });
   describe('load()', () => {
@@ -118,8 +115,7 @@ describe('extension-configuration', () => {
         key: 'googleApiKey',
         value: '313373',
         config: 'googleApiKey'
-      },
-      {section: 'agent.mcp', key: 'port', value: 1337, config: 'publicMcpPort'}
+      }
     ])(
       'Sets $config from configuration',
       async ({section, key, value, config}) => {
