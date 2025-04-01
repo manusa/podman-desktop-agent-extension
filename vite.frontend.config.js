@@ -8,5 +8,10 @@ export default defineConfig({
   build: {
     outDir: resolve(__dirname, 'dist', 'browser'),
     emptyOutDir: false,
+    rollupOptions: {
+      input: {
+        app: resolve(__dirname, 'frontend', 'src', 'index.html'),
+      }
+    },
   },
 });
