@@ -7,7 +7,7 @@ on:
 
 env:
   NODE_VERSION: 22
-  PODMAN_MCP_SERVER_VERSION: 0.0.8
+  PODMAN_MCP_SERVER_VERSION: 0.0.9
   IMAGE_NAME: quay.io/manusa/podman-desktop-agent-extension
   TAG: latest
 
