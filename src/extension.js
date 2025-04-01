@@ -1,7 +1,7 @@
 import extensionApi from '@podman-desktop/api';
 import {resourceLoader, uriFixer} from './extension-util';
 import {newConfiguration} from './extension-configuration';
-import {startMcpServer} from './extension-mcp-server.js';
+import {newMcpServer} from './extension-mcp-server.js';
 import {startWebSocketServer} from './extension-net';
 
 const indexPathSegments = ['dist', 'browser', 'index.html'];
@@ -18,10 +18,11 @@ extensionApi.configuration.onDidChangeConfiguration(async event => {
       parseInt(mcpServer.port) !== parseInt(configuration.mcpPort)
     ) {
       mcpServer.close();
-      mcpServer = startMcpServer({
+      mcpServer = newMcpServer({
         configuration,
         extensionContext: mcpServer.extensionContext
       });
+      mcpServer.start();
       statusBar.text = `MCP Server: ${configuration.mcpPort}`;
       statusBar.tooltip = `MCP Server listening on http://localhost:${configuration.mcpPort}/sse`;
     }
@@ -31,7 +32,8 @@ const statusBar = extensionApi.window.createStatusBarItem();
 
 export const activate = async extensionContext => {
   await configuration.load();
-  mcpServer = startMcpServer({configuration, extensionContext});
+  mcpServer = newMcpServer({configuration, extensionContext});
+  mcpServer.start();
   webSocketServer = startWebSocketServer(configuration);
   // Set up the statusbar
   extensionContext.subscriptions.push(statusBar);

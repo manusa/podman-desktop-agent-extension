@@ -2,25 +2,32 @@ import {beforeEach, describe, expect, test, vi} from 'vitest';
 import {spawn, spawnSync} from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
-import {startMcpServer} from './extension-mcp-server';
+import {newMcpServer} from './extension-mcp-server';
 import {newConfiguration} from './extension-configuration.js';
 
 vi.mock('node:fs');
 vi.mock('node:os');
 
 describe('extension-mcp-server', () => {
+  let configuration;
+  let extensionContext;
   beforeEach(() => {
     // Use standard shell in all platforms
     vi.mocked(fs.statSync).mockImplementation(() => {
       throw new Error('ENOENT');
     });
+    extensionContext = {};
   });
-  describe('startMcpServer()', () => {
-    let configuration;
-    let extensionContext;
-    beforeEach(() => {
-      extensionContext = {};
+  describe('newMcpServer()', () => {
+    test('stores the port in a variable', () => {
+      configuration = newConfiguration();
+      configuration.mcpPort = 1337;
+      const mcpServer = newMcpServer({configuration, extensionContext});
+      expect(mcpServer.port).toBe(1337);
     });
+  });
+  describe('start()', () => {
+    beforeEach(() => {});
     test.each([
       {
         platform: 'darwin',
@@ -58,7 +65,7 @@ describe('extension-mcp-server', () => {
         vi.mocked(os.platform).mockReturnValue(platform);
         vi.mocked(os.arch).mockReturnValue(arch);
         configuration = newConfiguration();
-        startMcpServer({configuration, extensionContext});
+        newMcpServer({configuration, extensionContext}).start();
         expect(spawn).toHaveBeenCalledWith(
           `dist/${expectedBinary}`,
           expect.any(Array),
@@ -69,7 +76,7 @@ describe('extension-mcp-server', () => {
     test('adds --sse-port to args', () => {
       configuration = newConfiguration();
       configuration.mcpPort = 1337;
-      startMcpServer({configuration, extensionContext});
+      newMcpServer({configuration, extensionContext}).start();
       expect(spawn).toHaveBeenCalledWith(
         expect.any(String),
         ['--sse-port', 1337],
@@ -81,16 +88,10 @@ describe('extension-mcp-server', () => {
       vi.mocked(os.arch).mockReturnValue('x64');
       configuration = newConfiguration();
       configuration.mcpPort = 1337;
-      startMcpServer({configuration, extensionContext});
+      newMcpServer({configuration, extensionContext}).start();
       expect(console.logs).toContain(
         'Starting Podman MCP server at podman-mcp-server-linux-amd64 in port 1337'
       );
-    });
-    test('stores the port in a variable', () => {
-      configuration = newConfiguration();
-      configuration.mcpPort = 1337;
-      const mcpServer = startMcpServer({configuration, extensionContext});
-      expect(mcpServer.port).toBe(1337);
     });
   });
   describe('mcpServer.close()', () => {
@@ -104,28 +105,30 @@ describe('extension-mcp-server', () => {
         }
         killed = true;
       });
-      mcpServer = startMcpServer({
+      mcpServer = newMcpServer({
         configuration: newConfiguration(),
         extensionContext: {}
       });
+      mcpServer.start();
       mcpServer.close();
     });
     test('logs when the server stops', () => {
       expect(console.logs).toContain('Closing MCP server');
     });
     test('on *nix kills the process', () => {
-      expect(process.kill).toHaveBeenCalledWith(mcpServer.pid);
+      expect(process.kill).toHaveBeenCalledWith(mcpServer.shell.pid);
     });
     test('on Windows kills the process', () => {
       vi.mocked(os.platform).mockReturnValue('win32');
-      mcpServer = startMcpServer({
+      mcpServer = newMcpServer({
         configuration: newConfiguration(),
         extensionContext: {}
       });
+      mcpServer.start();
       mcpServer.close();
       expect(spawnSync).toHaveBeenCalledWith(
         'taskkill.exe',
-        [`/PID ${mcpServer.pid}`, '/T', '/F'],
+        [`/PID ${mcpServer.shell.pid}`, '/T', '/F'],
         expect.any(Object)
       );
     });
