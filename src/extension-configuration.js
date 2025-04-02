@@ -6,17 +6,17 @@ import {spawnShellSync} from './extension-shell';
 /**
  * @typedef Configuration
  * @type {Object}
- * @property {String} mcpHost - Podman MCP server host.
- * @property {String | Number} mcpPort - Podman MCP server port.
+ * @property {string} mcpHost - Podman MCP server host.
+ * @property {string | number} mcpPort - Podman MCP server port.
  * @property {Boolean} isWindows - Whether the host is Windows.
- * @property {String} podmanCli - The Podman CLI command.
+ * @property {string} podmanCli - The Podman CLI command.
  * @property {Object} containerConnection - The container connection object.
- * @property {String} provider - The provider for the agent.
- * @property {String} model - The model for the agent.
- * @property {String} googleApiKey - The Google API key for the agent.
- * @property {Function} load - Loads the configuration.
- * @property {Function} toEnv - Converts the configuration to environment variables.
- * @property {Function} additionalHosts - Returns additional hosts for the container.
+ * @property {string} provider - The provider for the agent.
+ * @property {string} model - The model for the agent.
+ * @property {string} googleApiKey - The Google API key for the agent.
+ * @property {function: Promise<void>} load - Loads the configuration.
+ * @property {function: Array} toEnv - Converts the configuration to environment variables.
+ * @property {function: Array<string>} additionalHosts - Returns additional hosts for the container.
  */
 /**
  * Creates a new configuration object.

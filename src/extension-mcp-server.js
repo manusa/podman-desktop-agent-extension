@@ -20,12 +20,11 @@ const binaryName = ({configuration}) => {
 /**
  * @typedef McpServer
  * @type {Object}
- * @property {import('@podman-desktop/api').ExtensionContext} extensionContext - The extension context.
  * @property {String} binaryName - The name of the MCP server binary.
  * @property {String | Number} port - The port the MCP server is running on.
  * @property {Object} shell - The shell object used to spawn the MCP server.
- * @property {Function} start - Starts the MCP server.
- * @property {Function} close - Closes the MCP server.
+ * @property {function: void} start - Starts the MCP server.
+ * @property {function: void} close - Closes the MCP server.
  */
 /**
  * Creates a new MCP server instance.
@@ -37,7 +36,6 @@ const binaryName = ({configuration}) => {
 export const newMcpServer = ({configuration, extensionContext}) => {
   /** @type {McpServer} */
   const mcpServer = {
-    extensionContext,
     binaryName: binaryName({configuration}),
     port: configuration.mcpPort,
     shell: null,
