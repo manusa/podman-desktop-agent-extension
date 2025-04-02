@@ -6,6 +6,7 @@ import {spawnShellSync} from './extension-shell';
 /**
  * @typedef Configuration
  * @type {Object}
+ * @property {number} aiSdkPort - The port for the HTTP server where the AI SDK is exposed.
  * @property {string} mcpHost - Podman MCP server host.
  * @property {string | number} mcpPort - Podman MCP server port.
  * @property {Boolean} isWindows - Whether the host is Windows.
@@ -25,6 +26,7 @@ import {spawnShellSync} from './extension-shell';
 export const newConfiguration = () => {
   /** @type {Configuration} */
   const configuration = {
+    aiSdkPort: null,
     mcpHost: 'host.containers.internal',
     mcpPort: null,
     isWindows: os.platform() === 'win32',
