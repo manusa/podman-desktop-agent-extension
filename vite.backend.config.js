@@ -10,7 +10,22 @@ export default defineConfig({
     outDir: resolve(__dirname, 'dist'),
     emptyOutDir: false,
     rollupOptions: {
-      external: ['@podman-desktop/api', 'child_process', 'express', 'fs', 'http', 'node:child_process', 'node:fs', 'node:os', 'node:process', 'path', 'ws'],
+      external: [
+        '@podman-desktop/api',
+        'child_process',
+        'express',
+        'fs',
+        'http',
+        'node:child_process',
+        'node:fs',
+        'node:http',
+        'node:net',
+        'node:os',
+        'node:path',
+        'node:process',
+        'path',
+        'ws'
+      ]
     },
     lib: {
       entry: resolve(__dirname, 'src', 'extension.js'),

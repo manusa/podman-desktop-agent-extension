@@ -61,6 +61,8 @@
   },
   "dependencies": {
     "@podman-desktop/api": "1.17.2",
+    "@assistant-ui/react": "0.8.11",
+    "@assistant-ui/react-ui": "0.1.8",
     "@langchain/core": "0.3.43",
     "@langchain/google-genai": "0.2.1",
     "@langchain/langgraph": "0.2.62",
@@ -69,6 +71,7 @@
     "@xterm/addon-fit": "0.10.0",
     "@xterm/xterm": "5.5.0",
     "express": "5.1.0",
+    "finalhandler": "2.1.0",
     "ws": "8.18.1"
   },
   "devDependencies": {
