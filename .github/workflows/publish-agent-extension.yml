@@ -4,12 +4,14 @@ on:
   push:
     branches:
       - main
+    tags:
+      - '*'
 
 env:
   NODE_VERSION: 22
   PODMAN_MCP_SERVER_VERSION: 0.0.9
   IMAGE_NAME: quay.io/manusa/podman-desktop-agent-extension
-  TAG: latest
+  TAG: ${{ github.ref_name == 'main' && 'latest' || github.ref_type == 'tag' && github.ref_name && startsWith(github.ref_name, 'v') && github.ref_name || 'unknown' }}
 
 jobs:
   publish-platform-images:

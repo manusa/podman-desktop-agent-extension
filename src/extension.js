@@ -5,7 +5,7 @@ import {newMcpServer} from './extension-mcp-server';
 import {findFreePort, startWebSocketServer} from './extension-net';
 import {newAiSdk} from './ai-sdk';
 
-const basePathSegments = ['dist', 'assistant-ui'];
+const basePathSegments = ['dist', 'browser'];
 const indexPathSegments = [...basePathSegments, 'index.html'];
 
 let webSocketServer;
@@ -56,7 +56,11 @@ export const activate = async extensionContext => {
   );
   extensionContext.subscriptions.push(wvp);
   const loadResource = resourceLoader(extensionContext);
-  const fixResource = uriFixer({extensionContext, basePathSegments, webView: wvp.webview});
+  const fixResource = uriFixer({
+    extensionContext,
+    basePathSegments,
+    webView: wvp.webview
+  });
   let indexHtml = fixResource(await loadResource(indexPathSegments));
   indexHtml = indexHtml.replace(
     '<body>',
