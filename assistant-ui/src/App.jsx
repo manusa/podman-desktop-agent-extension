@@ -7,7 +7,7 @@ const disabledAvatar = {fallback: null};
 const ToolFallback = ({toolName, argsText, result}) => {
   // const [isCollapsed, setIsCollapsed] = useState(true);
   return (
-    <div className="tool-fallback">
+    <div className='tool-fallback'>
       <div>
         <p>
           Used tool: <strong>{toolName}</strong>
@@ -20,10 +20,10 @@ const ToolFallback = ({toolName, argsText, result}) => {
         <div>
           <p>Result:</p>
           <pre>
-                {typeof result === 'string'
-                  ? result
-                  : JSON.stringify(result, null, 2)}
-              </pre>
+            {typeof result === 'string'
+              ? result
+              : JSON.stringify(result, null, 2)}
+          </pre>
         </div>
       )}
     </div>
@@ -34,8 +34,11 @@ const Main = () => {
   const runtime = useThreadRuntime();
   // runtime.subscribe(e => console.log(runtime.getState()));
   return (
-    <main className="assistant-ui">
-      <Thread assistantAvatar={disabledAvatar} assistantMessage={{components: {ToolFallback: ToolFallback}}} />
+    <main className='assistant-ui'>
+      <Thread
+        assistantAvatar={disabledAvatar}
+        assistantMessage={{components: {ToolFallback: ToolFallback}}}
+      />
     </main>
   );
 };
