@@ -1,12 +1,13 @@
 import extensionApi from '@podman-desktop/api';
 import {resourceLoader, uriFixer} from './extension-util';
 import {newConfiguration} from './extension-configuration';
-import {newMcpServer} from './extension-mcp-server.js';
+import {newMcpServer} from './extension-mcp-server';
 import {startWebSocketServer} from './extension-net';
 
 const indexPathSegments = ['dist', 'browser', 'index.html'];
 
 let webSocketServer;
+/** @type {import('./extension-mcp-server').McpServer} */
 let mcpServer;
 
 const configuration = newConfiguration();

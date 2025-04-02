@@ -3,14 +3,36 @@ import os from 'node:os';
 import {findFreePort} from './extension-net';
 import {spawnShellSync} from './extension-shell';
 
+/**
+ * @typedef Configuration
+ * @type {Object}
+ * @property {String} mcpHost - Podman MCP server host.
+ * @property {String | Number} mcpPort - Podman MCP server port.
+ * @property {Boolean} isWindows - Whether the host is Windows.
+ * @property {String} podmanCli - The Podman CLI command.
+ * @property {Object} containerConnection - The container connection object.
+ * @property {String} provider - The provider for the agent.
+ * @property {String} model - The model for the agent.
+ * @property {String} googleApiKey - The Google API key for the agent.
+ * @property {Function} load - Loads the configuration.
+ * @property {Function} toEnv - Converts the configuration to environment variables.
+ * @property {Function} additionalHosts - Returns additional hosts for the container.
+ */
+/**
+ * Creates a new configuration object.
+ * @returns {Configuration}
+ */
 export const newConfiguration = () => {
+  /** @type {Configuration} */
   const configuration = {
-    // Podman MCP server host
     mcpHost: 'host.containers.internal',
-    // Podman MCP server port
     mcpPort: null,
     isWindows: os.platform() === 'win32',
     podmanCli: os.platform() === 'win32' ? 'podman.exe' : 'podman',
+    containerConnection: null,
+    provider: null,
+    model: null,
+    googleApiKey: null,
     load: async () => {
       // Find container engine
       const connections = extensionApi.provider.getContainerConnections() || [];
