@@ -13,7 +13,7 @@
  * @property {function: void} close - Closes the LangGraph instance.
  */
 import express from 'express';
-import {streamText, experimental_createMCPClient as createMCPClient } from 'ai';
+import {streamText, experimental_createMCPClient as createMCPClient} from 'ai';
 import {createGoogleGenerativeAI} from '@ai-sdk/google';
 
 /**
@@ -37,8 +37,17 @@ export const newAiSdk = ({configuration}) => {
         });
         aiSdk._model = google(configuration.model);
         const app = express();
+        // TODO: proper CORS handling
+        app.use((req, res, next) => {
+          res.header('Access-Control-Allow-Origin', '*');
+          res.header(
+            'Access-Control-Allow-Headers',
+            'Origin, X-Requested-With, Content-Type, Accept'
+          );
+          next();
+        });
         app.use(express.json());
-        app.post('/api/v1/messages', aiSdk._postMessages)
+        app.post('/api/v1/messages', aiSdk._postMessages);
         aiSdk._server = app.listen(configuration.aiSdkPort);
       } catch (err) {
         console.error('Error starting LangGraph:', err);
@@ -58,8 +67,8 @@ export const newAiSdk = ({configuration}) => {
             url: `http://localhost:${configuration.mcpPort}/sse`
           }
         });
-        tools = await mcpClient.tools()
-      } catch(err) {
+        tools = await mcpClient.tools();
+      } catch (err) {
         console.error('Error creating MCP client:', err);
       }
       const result = streamText({
