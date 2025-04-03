@@ -20,7 +20,7 @@
         "agent.ai.google.model": {
           "type": "string",
           "default": "gemini-2.0-flash",
-          "description": "Goose LLM Model name"
+          "description": "Google LLM Model name"
         },
         "agent.ai.google.apiKey": {
           "type": "string",
@@ -31,7 +31,8 @@
           "description": "OpenAI API base URL"
         },
         "agent.ai.openAi.model": {
-          "type": "string"
+          "type": "string",
+          "description": "OpenAI LLM Model name"
         },
         "agent.ai.openAi.apiKey": {
           "type": "string",
