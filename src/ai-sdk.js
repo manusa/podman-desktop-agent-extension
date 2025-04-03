@@ -55,20 +55,20 @@ export const newAiSdk = ({configuration}) => {
     _postMessages: async (req, res) => {
       console.log('AI SDK: New message request');
       let model;
-      if (configuration.provider === 'OpenAI') {
+      if ((await configuration.provider()) === 'OpenAI') {
         console.log('AI SDK: Using OpenAI');
         const openai = createOpenAI({
-          apiKey: configuration.openAiApiKey,
-          baseURL: configuration.openAiBaseUrl,
+          apiKey: await configuration.openAiApiKey(),
+          baseURL: await configuration.openAiBaseUrl(),
           compatibility: 'compatible'
         });
-        model = openai(configuration.openAiModel);
+        model = openai(await configuration.openAiModel());
       } else {
         console.log('AI SDK: Using Google');
         const google = createGoogleGenerativeAI({
-          apiKey: configuration.googleApiKey
+          apiKey: await configuration.googleApiKey()
         });
-        model = google(configuration.googleModel);
+        model = google(await configuration.googleModel());
       }
       let mcpClient = null;
       let tools = null;

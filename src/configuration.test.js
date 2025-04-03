@@ -54,51 +54,51 @@ describe('configuration', () => {
           expect(configuration.mcpPort).toBe(313373);
         });
       });
-      test.each([
-        {
-          section: 'agent.ai',
-          key: 'provider',
-          value: 'google',
-          config: 'provider'
-        },
-        {
-          section: 'agent.ai.google',
-          key: 'model',
-          value: 'gemini-1337',
-          config: 'googleModel'
-        },
-        {
-          section: 'agent.ai.google',
-          key: 'apiKey',
-          value: '313373',
-          config: 'googleApiKey'
-        },
-        {
-          section: 'agent.ai.openAi',
-          key: 'baseUrl',
-          value: 'https://example.com/v1',
-          config: 'openAiBaseUrl'
-        },
-        {
-          section: 'agent.ai.openAi',
-          key: 'model',
-          value: 'granite-8b-code-instruct-128k',
-          config: 'openAiModel'
-        },
-        {
-          section: 'agent.ai.openAi',
-          key: 'apiKey',
-          value: 'parasol-nuri-api-key',
-          config: 'openAiApiKey'
-        }
-      ])(
-        'Sets $config from configuration',
-        async ({section, key, value, config}) => {
-          extensionApi.configuration.mockedSections[section] = {[key]: value};
-          configuration = await newConfiguration();
-          expect(configuration[config]).toBe(value);
-        }
-      );
     });
   });
+  test.each([
+    {
+      section: 'agent.ai',
+      key: 'provider',
+      value: 'google',
+      config: 'provider'
+    },
+    {
+      section: 'agent.ai.google',
+      key: 'model',
+      value: 'gemini-1337',
+      config: 'googleModel'
+    },
+    {
+      section: 'agent.ai.google',
+      key: 'apiKey',
+      value: '313373',
+      config: 'googleApiKey'
+    },
+    {
+      section: 'agent.ai.openAi',
+      key: 'baseUrl',
+      value: 'https://example.com/v1',
+      config: 'openAiBaseUrl'
+    },
+    {
+      section: 'agent.ai.openAi',
+      key: 'model',
+      value: 'granite-8b-code-instruct-128k',
+      config: 'openAiModel'
+    },
+    {
+      section: 'agent.ai.openAi',
+      key: 'apiKey',
+      value: 'parasol-nuri-api-key',
+      config: 'openAiApiKey'
+    }
+  ])(
+    'configuration[$config]() loaded from configuration',
+    async ({section, key, value, config}) => {
+      const configuration = await newConfiguration();
+      extensionApi.configuration.mockedSections[section] = {[key]: value};
+      expect(await configuration[config]()).toBe(value);
+    }
+  );
 });

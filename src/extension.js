@@ -20,20 +20,8 @@ let mcpServer;
 let aiSdk;
 
 extensionApi.configuration.onDidChangeConfiguration(async event => {
-  if (event.affectsConfiguration('agent.mcp') && configuration) {
-    if (
-      mcpServer &&
-      parseInt(mcpServer.port) !== parseInt(configuration.mcpPort)
-    ) {
-      mcpServer.close();
-      mcpServer = newMcpServer({
-        configuration,
-        extensionContext: mcpServer.extensionContext
-      });
-      mcpServer.start();
-      statusBar.text = `MCP Server: ${configuration.mcpPort}`;
-      statusBar.tooltip = `MCP Server listening on http://localhost:${configuration.mcpPort}/sse`;
-    }
+  if (configuration) {
+    await configuration.onChange(event);
   }
 });
 const statusBar = extensionApi.window.createStatusBarItem();

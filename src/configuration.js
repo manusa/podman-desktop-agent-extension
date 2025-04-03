@@ -1,3 +1,7 @@
+/**
+ * @typedef {import('@podman-desktop/api').ConfigurationChangeEvent} ConfigurationChangeEvent
+ * @typedef {import('express').RequestHandler} RequestHandler
+ */
 import extensionApi from '@podman-desktop/api';
 import os from 'node:os';
 import {findFreePort} from './net';
@@ -10,12 +14,13 @@ import {findFreePort} from './net';
  * @property {String | number} mcpPort - Podman MCP server port.
  * @property {Boolean} isWindows - Whether the host is Windows.
  * @property {String} podmanCli - The Podman CLI command.
- * @property {String} provider - The AI model provider.
- * @property {String} googleModel - The Google model.
- * @property {String} googleApiKey - The Google API key.
- * @property {String} openAiModel - The OpenAI model.
- * @property {String} openAiBaseUrl - The OpenAI base URL.
- * @property {String} openAiApiKey - The OpenAI API key.
+ * @property {function: Promise<String>} provider - The AI model provider.
+ * @property {function: Promise<String>} googleModel - The Google model.
+ * @property {function: Promise<String>} googleApiKey - The Google API key.
+ * @property {function: Promise<String>} openAiModel - The OpenAI model.
+ * @property {function: Promise<String>} openAiBaseUrl - The OpenAI base URL.
+ * @property {function: Promise<String>} openAiApiKey - The OpenAI API key.
+ * @property {function(ConfigurationChangeEvent)} onChange - A function to call when the configuration changes.
  */
 /**
  * Creates a new configuration object.
@@ -32,24 +37,50 @@ export const newConfiguration = async () => {
     mcpPort: configuredMcpPort > 0 ? configuredMcpPort : await findFreePort(),
     isWindows: os.platform() === 'win32',
     podmanCli: os.platform() === 'win32' ? 'podman.exe' : 'podman',
-    provider: await extensionApi.configuration
-      .getConfiguration('agent.ai')
-      .get('provider'),
-    googleModel: await extensionApi.configuration
-      .getConfiguration('agent.ai.google')
-      .get('model'),
-    googleApiKey: await extensionApi.configuration
-      .getConfiguration('agent.ai.google')
-      .get('apiKey'),
-    openAiModel: await extensionApi.configuration
-      .getConfiguration('agent.ai.openAi')
-      .get('model'),
-    openAiBaseUrl: await extensionApi.configuration
-      .getConfiguration('agent.ai.openAi')
-      .get('baseUrl'),
-    openAiApiKey: await extensionApi.configuration
-      .getConfiguration('agent.ai.openAi')
-      .get('apiKey')
+    provider: async () =>
+      extensionApi.configuration.getConfiguration('agent.ai').get('provider'),
+    googleModel: async () =>
+      extensionApi.configuration
+        .getConfiguration('agent.ai.google')
+        .get('model'),
+    googleApiKey: async () =>
+      extensionApi.configuration
+        .getConfiguration('agent.ai.google')
+        .get('apiKey'),
+    openAiModel: async () =>
+      extensionApi.configuration
+        .getConfiguration('agent.ai.openAi')
+        .get('model'),
+    openAiBaseUrl: async () =>
+      extensionApi.configuration
+        .getConfiguration('agent.ai.openAi')
+        .get('baseUrl'),
+    openAiApiKey: async () =>
+      extensionApi.configuration
+        .getConfiguration('agent.ai.openAi')
+        .get('apiKey'),
+    onChange: event => {
+      if (event.affectsConfiguration('agent')) {
+        console.log('Configuration changed');
+        console.log(JSON.stringify(event));
+      }
+    }
+    //   if (event.affectsConfiguration('agent.mcp') && configuration) {
+    //     if (
+    //       mcpServer &&
+    //       parseInt(mcpServer.port) !== parseInt(configuration.mcpPort)
+    //     ) {
+    //       mcpServer.close();
+    //       mcpServer = newMcpServer({
+    //         configuration,
+    //         extensionContext: mcpServer.extensionContext
+    //       });
+    //       mcpServer.start();
+    //       statusBar.text = `MCP Server: ${configuration.mcpPort}`;
+    //       statusBar.tooltip = `MCP Server listening on http://localhost:${configuration.mcpPort}/sse`;
+    //     }
+    //   }
+    // }
   };
   return configuration;
 };
