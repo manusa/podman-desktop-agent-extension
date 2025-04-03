@@ -1,3 +1,8 @@
+/**
+ * @typedef {import('./ai-sdk')}.AiSdk AiSdk
+ * @typedef {import('./configuration')}.Configuration Configuration
+ * @typedef {import('././extension-mcp-server')}.McpServer McpServer
+ */
 import extensionApi from '@podman-desktop/api';
 import {resourceLoader, uriFixer} from './extension-util';
 import {newConfiguration} from './configuration';
@@ -7,14 +12,15 @@ import {newAiSdk} from './ai-sdk';
 const basePathSegments = ['dist', 'assistant-ui'];
 const indexPathSegments = [...basePathSegments, 'index.html'];
 
-/** @type {import('./extension-mcp-server').McpServer} */
+/** @type {Configuration} */
+let configuration;
+/** @type {McpServer} */
 let mcpServer;
-/** @type {import('./ai-sdk').AiSdk} */
+/** @type {AiSdk} */
 let aiSdk;
 
-const configuration = newConfiguration();
 extensionApi.configuration.onDidChangeConfiguration(async event => {
-  if (event.affectsConfiguration('agent.mcp')) {
+  if (event.affectsConfiguration('agent.mcp') && configuration) {
     await configuration.load();
     if (
       mcpServer &&
@@ -34,6 +40,7 @@ extensionApi.configuration.onDidChangeConfiguration(async event => {
 const statusBar = extensionApi.window.createStatusBarItem();
 
 export const activate = async extensionContext => {
+  configuration = await newConfiguration();
   await configuration.load();
   mcpServer = newMcpServer({configuration, extensionContext});
   mcpServer.start();

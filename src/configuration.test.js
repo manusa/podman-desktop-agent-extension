@@ -9,9 +9,9 @@ describe('configuration', () => {
   describe('newConfiguration()', () => {
     let configuration;
     describe('on windows', () => {
-      beforeEach(() => {
+      beforeEach(async () => {
         vi.mocked(os.platform).mockReturnValue('win32');
-        configuration = newConfiguration();
+        configuration = await newConfiguration();
       });
       test('Sets isWindows to true', () => {
         expect(configuration.isWindows).toBe(true);
@@ -21,9 +21,9 @@ describe('configuration', () => {
       });
     });
     describe('on linux', () => {
-      beforeEach(() => {
+      beforeEach(async () => {
         vi.mocked(os.platform).mockReturnValue('linux');
-        configuration = newConfiguration();
+        configuration = await newConfiguration();
       });
       test('Sets isWindows to false', () => {
         expect(configuration.isWindows).toBe(false);
@@ -33,8 +33,8 @@ describe('configuration', () => {
       });
     });
     describe('sets common fields', () => {
-      beforeEach(() => {
-        configuration = newConfiguration();
+      beforeEach(async () => {
+        configuration = await newConfiguration();
       });
       test('Sets mcpHost to "host.containers.internal"', () => {
         expect(configuration.mcpHost).toBe('host.containers.internal');
@@ -43,8 +43,8 @@ describe('configuration', () => {
   });
   describe('load()', () => {
     let configuration;
-    beforeEach(() => {
-      configuration = newConfiguration();
+    beforeEach(async () => {
+      configuration = await newConfiguration();
     });
     describe('with no providers', () => {
       beforeEach(async () => {

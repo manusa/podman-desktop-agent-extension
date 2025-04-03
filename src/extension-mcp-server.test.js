@@ -27,7 +27,6 @@ describe('extension-mcp-server', () => {
     });
   });
   describe('start()', () => {
-    beforeEach(() => {});
     test.each([
       {
         platform: 'darwin',
@@ -61,10 +60,10 @@ describe('extension-mcp-server', () => {
       }
     ])(
       'on $platform uses $expectedBinary',
-      ({platform, arch, expectedBinary}) => {
+      async ({platform, arch, expectedBinary}) => {
         vi.mocked(os.platform).mockReturnValue(platform);
         vi.mocked(os.arch).mockReturnValue(arch);
-        configuration = newConfiguration();
+        configuration = await newConfiguration();
         newMcpServer({configuration, extensionContext}).start();
         expect(spawn).toHaveBeenCalledWith(
           `dist/${expectedBinary}`,
@@ -97,7 +96,7 @@ describe('extension-mcp-server', () => {
   describe('mcpServer.close()', () => {
     let mcpServer;
     let killed;
-    beforeEach(() => {
+    beforeEach(async () => {
       killed = false;
       vi.spyOn(process, 'kill').mockImplementation(() => {
         if (killed) {
@@ -106,7 +105,7 @@ describe('extension-mcp-server', () => {
         killed = true;
       });
       mcpServer = newMcpServer({
-        configuration: newConfiguration(),
+        configuration: await newConfiguration(),
         extensionContext: {}
       });
       mcpServer.start();
@@ -118,10 +117,10 @@ describe('extension-mcp-server', () => {
     test('on *nix kills the process', () => {
       expect(process.kill).toHaveBeenCalledWith(mcpServer.shell.pid);
     });
-    test('on Windows kills the process', () => {
+    test('on Windows kills the process', async () => {
       vi.mocked(os.platform).mockReturnValue('win32');
       mcpServer = newMcpServer({
-        configuration: newConfiguration(),
+        configuration: await newConfiguration(),
         extensionContext: {}
       });
       mcpServer.start();

@@ -24,12 +24,12 @@ import {spawnShellSync} from './extension-shell';
  */
 /**
  * Creates a new configuration object.
- * @returns {Configuration}
+ * @returns {Promise<Configuration>}
  */
-export const newConfiguration = () => {
+export const newConfiguration = async () => {
   /** @type {Configuration} */
   const configuration = {
-    aiSdkPort: null,
+    aiSdkPort: await findFreePort(),
     mcpHost: 'host.containers.internal',
     mcpPort: null,
     isWindows: os.platform() === 'win32',
@@ -42,7 +42,6 @@ export const newConfiguration = () => {
     openAiBaseUrl: null,
     openAiApiKey: null,
     load: async () => {
-      configuration.aiSdkPort = await findFreePort();
       // Find container engine
       const connections = extensionApi.provider.getContainerConnections() || [];
       configuration.containerConnection = connections.find(
