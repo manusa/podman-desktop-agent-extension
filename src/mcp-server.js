@@ -5,6 +5,8 @@ import extensionApi from '@podman-desktop/api';
 import os from 'node:os';
 import {spawnShell, spawnShellSync} from './extension-shell';
 
+const monitorInterval = 2_500;
+
 const binaryName = ({configuration}) => {
   let ret = 'podman-mcp-server-';
   if (configuration.isWindows) {
@@ -15,6 +17,25 @@ const binaryName = ({configuration}) => {
   ret += os.arch() === 'x64' ? '-amd64' : '-arm64';
   ret += configuration.isWindows ? '.exe' : '';
   return ret;
+};
+
+const killProcess = ({configuration, pid}) => {
+  console.log(`MCP Server: closing server at PID ${pid}`);
+  if (configuration.isWindows) {
+    // For some reason the process exits but remains on Windows
+    spawnShellSync('taskkill.exe', [`/PID ${pid}`, '/T', '/F']);
+  } else {
+    process.kill(pid);
+  }
+  // wait 2 seconds for the process to exit
+  const start = Date.now();
+  while (Date.now() - start < 2_000) {
+    try {
+      process.kill(pid);
+    } catch {
+      break;
+    }
+  }
 };
 
 /**
@@ -33,9 +54,10 @@ const binaryName = ({configuration}) => {
  * @param {Object} options - The options for the MCP server.
  * @param {Configuration} options.configuration - The configuration object.
  * @param {import('@podman-desktop/api').ExtensionContext} options.extensionContext - The extension context.
+ * @param {import('@podman-desktop/api').StatusBarItem} options.statusBar - The status bar item (If running in Podman Desktop).
  * @returns {McpServer} The MCP server instance.
  */
-export const newMcpServer = async ({configuration, extensionContext}) => {
+export const newMcpServer = async ({configuration, extensionContext, statusBar}) => {
   /** @type {McpServer} */
   const mcpServer = {
     closing: false,
@@ -60,6 +82,11 @@ export const newMcpServer = async ({configuration, extensionContext}) => {
       mcpServer.shell.onExit(code => {
         console.log(`MCP Server: exited with code ${code}`);
       });
+      if (statusBar) {
+        statusBar.text = `MCP Server: ${mcpServer.port}`;
+        statusBar.tooltip = `Podman MCP Server listening on http://localhost:${mcpServer.port}/sse`;
+        statusBar.iconClass = 'fa fa-plug';
+      }
     },
     close: () => {
       console.log('MCP Server: closing...');
@@ -68,31 +95,29 @@ export const newMcpServer = async ({configuration, extensionContext}) => {
         return;
       }
       mcpServer.closing = true;
-      console.log(`MCP Server: closing server at PID ${mcpServer.shell.pid}`);
-      if (configuration.isWindows) {
-        // For some reason the process exits but remains on Windows
-        spawnShellSync('taskkill.exe', [
-          `/PID ${mcpServer.shell.pid}`,
-          '/T',
-          '/F'
-        ]);
-      } else {
-        process.kill(mcpServer.shell.pid);
-      }
-      // wait 2 seconds for the process to exit
-      const start = Date.now();
-      while (Date.now() - start < 2_000) {
-        try {
-          process.kill(mcpServer.shell.pid);
-        } catch {
-          break;
-        }
-      }
+      killProcess({configuration, pid: mcpServer.shell.pid});
     },
     monitor: () => {
-      if (!mcpServer.shell && !mcpServer.closing) {
-        mcpServer.start();
+      if (mcpServer.closing) {
+        return;
       }
+      (async () => {
+        const configuredPort = await configuration.mcpPort();
+        if (configuredPort !== mcpServer.port && mcpServer.shell) {
+          mcpServer.port = configuredPort;
+          killProcess({configuration, pid: mcpServer.shell.pid});
+          mcpServer.shell = null;
+        }
+        if (!mcpServer.shell || mcpServer.shell.closed) {
+          mcpServer.start();
+        }
+      })()
+        .catch(e => {
+          console.error('MCP Server: error in monitor', e);
+        })
+        .finally(() => {
+          setTimeout(() => mcpServer.monitor(), monitorInterval);
+        });
     }
   };
   return mcpServer;

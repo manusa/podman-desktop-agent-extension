@@ -28,15 +28,12 @@ const statusBar = extensionApi.window.createStatusBarItem();
 
 export const activate = async extensionContext => {
   configuration = await newConfiguration();
-  mcpServer = newMcpServer({configuration, extensionContext});
-  mcpServer.start();
+  mcpServer = await newMcpServer({configuration, extensionContext, statusBar});
+  mcpServer.monitor();
   aiSdk = await newAiSdk({configuration});
   await aiSdk.start();
   // Set up the statusbar
   extensionContext.subscriptions.push(statusBar);
-  statusBar.text = `MCP Server: ${configuration.mcpPort}`;
-  statusBar.tooltip = `MCP Server listening on http://localhost:${configuration.mcpPort}/sse`;
-  statusBar.iconClass = 'fa fa-plug';
   statusBar.show();
   // Set up the webview
   const wvp = extensionApi.window.createWebviewPanel(
