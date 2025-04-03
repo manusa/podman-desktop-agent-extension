@@ -2,13 +2,11 @@ import extensionApi from '@podman-desktop/api';
 import {resourceLoader, uriFixer} from './extension-util';
 import {newConfiguration} from './configuration';
 import {newMcpServer} from './extension-mcp-server';
-import {startWebSocketServer} from './net';
 import {newAiSdk} from './ai-sdk';
 
 const basePathSegments = ['dist', 'assistant-ui'];
 const indexPathSegments = [...basePathSegments, 'index.html'];
 
-let webSocketServer;
 /** @type {import('./extension-mcp-server').McpServer} */
 let mcpServer;
 /** @type {import('./ai-sdk').AiSdk} */
@@ -41,7 +39,6 @@ export const activate = async extensionContext => {
   mcpServer.start();
   aiSdk = await newAiSdk({configuration});
   await aiSdk.start();
-  webSocketServer = startWebSocketServer(configuration);
   // Set up the statusbar
   extensionContext.subscriptions.push(statusBar);
   statusBar.text = `MCP Server: ${configuration.mcpPort}`;
@@ -75,8 +72,5 @@ export const deactivate = () => {
   }
   if (aiSdk) {
     aiSdk.close();
-  }
-  if (webSocketServer) {
-    webSocketServer.close();
   }
 };
