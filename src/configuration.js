@@ -1,6 +1,6 @@
 import extensionApi from '@podman-desktop/api';
 import os from 'node:os';
-import {findFreePort} from './extension-net';
+import {findFreePort} from './net';
 import {spawnShellSync} from './extension-shell';
 
 /**

@@ -2,7 +2,7 @@ import extensionApi from '@podman-desktop/api';
 import {resourceLoader, uriFixer} from './extension-util';
 import {newConfiguration} from './configuration';
 import {newMcpServer} from './extension-mcp-server';
-import {startWebSocketServer} from './extension-net';
+import {startWebSocketServer} from './net';
 import {newAiSdk} from './ai-sdk';
 
 const basePathSegments = ['dist', 'assistant-ui'];

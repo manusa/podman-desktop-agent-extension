@@ -1,7 +1,7 @@
 import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest';
-import {findFreePort, startWebSocketServer} from './extension-net';
+import {findFreePort, startWebSocketServer} from './net';
 
-describe('extension-net', () => {
+describe('net', () => {
   test('findFreePort()', async () => {
     const port = await findFreePort();
     expect(port).toBeGreaterThan(0);
