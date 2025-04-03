@@ -5,7 +5,7 @@ import {newMcpServer} from './extension-mcp-server';
 import {findFreePort, startWebSocketServer} from './extension-net';
 import {newAiSdk} from './ai-sdk';
 
-const basePathSegments = ['dist', 'browser'];
+const basePathSegments = ['dist', 'assistant-ui'];
 const indexPathSegments = [...basePathSegments, 'index.html'];
 
 let webSocketServer;
