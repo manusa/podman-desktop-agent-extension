@@ -7,7 +7,6 @@
  * @type {Object}
  * @property {Configuration} configuration - The configuration object.
  * @property {import('http').Server} _server - The HTTP server instance.
- * @property {import('@ai-sdk/provider').LanguageModelV1} _model - The AI SDK compatible model instance.
  * @property {RequestHandler} _postMessages - The function to handle incoming messages (HTTP POST).
  * @property {function: void} start - Starts the LangGraph instance.
  * @property {function: void} close - Closes the LangGraph instance.
@@ -15,6 +14,7 @@
 import express from 'express';
 import {streamText, experimental_createMCPClient as createMCPClient} from 'ai';
 import {createGoogleGenerativeAI} from '@ai-sdk/google';
+import {createOpenAI} from '@ai-sdk/openai';
 
 /**
  * Creates a new LangGraph instance.
@@ -28,14 +28,9 @@ export const newAiSdk = ({configuration}) => {
   const aiSdk = {
     configuration,
     _server: null,
-    _model: null,
     start: () => {
       console.log('Ai SDK: Starting...');
       try {
-        const google = createGoogleGenerativeAI({
-          apiKey: configuration.googleApiKey
-        });
-        aiSdk._model = google(configuration.model);
         const app = express();
         // TODO: proper CORS handling
         app.use((req, res, next) => {
@@ -58,6 +53,23 @@ export const newAiSdk = ({configuration}) => {
       aiSdk._server && aiSdk._server.close();
     },
     _postMessages: async (req, res) => {
+      console.log('AI SDK: New message request');
+      let model;
+      if (configuration.provider === 'OpenAI') {
+        console.log('AI SDK: Using OpenAI');
+        const openai = createOpenAI({
+          apiKey: configuration.openAiApiKey,
+          baseURL: configuration.openAiBaseUrl,
+          compatibility: 'compatible'
+        });
+        model = openai(configuration.openAiModel);
+      } else {
+        console.log('AI SDK: Using Google');
+        const google = createGoogleGenerativeAI({
+          apiKey: configuration.googleApiKey
+        });
+        model = google(configuration.googleModel);
+      }
       let mcpClient = null;
       let tools = null;
       try {
@@ -72,9 +84,8 @@ export const newAiSdk = ({configuration}) => {
         console.error('Error creating MCP client:', err);
       }
       const result = streamText({
-        // model: openaiModel,
-        model: aiSdk._model,
-        tools: tools,
+        model,
+        tools,
         messages: req.body.messages,
         onFinish: () => mcpClient && mcpClient.close(),
         onError: err => {

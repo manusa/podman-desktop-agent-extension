@@ -103,22 +103,40 @@ describe('configuration', () => {
     });
     test.each([
       {
-        section: 'agent.goose',
+        section: 'agent.ai',
         key: 'provider',
         value: 'google',
         config: 'provider'
       },
       {
-        section: 'agent.goose',
+        section: 'agent.ai.google',
         key: 'model',
         value: 'gemini-1337',
-        config: 'model'
+        config: 'googleModel'
       },
       {
-        section: 'agent.goose.provider.gemini',
-        key: 'googleApiKey',
+        section: 'agent.ai.google',
+        key: 'apiKey',
         value: '313373',
         config: 'googleApiKey'
+      },
+      {
+        section: 'agent.ai.openAi',
+        key: 'baseUrl',
+        value: 'https://example.com/v1',
+        config: 'openAiBaseUrl'
+      },
+      {
+        section: 'agent.ai.openAi',
+        key: 'model',
+        value: 'granite-8b-code-instruct-128k',
+        config: 'openAiModel'
+      },
+      {
+        section: 'agent.ai.openAi',
+        key: 'apiKey',
+        value: 'parasol-nuri-api-key',
+        config: 'openAiApiKey'
       }
     ])(
       'Sets $config from configuration',

@@ -11,20 +11,31 @@
     "configuration": {
       "title": "Agent",
       "properties": {
-        "agent.goose.provider": {
+        "agent.ai.provider": {
           "type": "string",
           "default": "google",
-          "enum": ["google"],
-          "description": "Goose LLM Provider"
+          "enum": ["google", "OpenAI"],
+          "description": "LLM Provider"
         },
-        "agent.goose.model": {
+        "agent.ai.google.model": {
           "type": "string",
           "default": "gemini-2.0-flash",
           "description": "Goose LLM Model name"
         },
-        "agent.goose.provider.gemini.googleApiKey": {
+        "agent.ai.google.apiKey": {
           "type": "string",
           "description": "Google API Key"
+        },
+        "agent.ai.openAi.baseUrl": {
+          "type": "string",
+          "description": "OpenAI API base URL"
+        },
+        "agent.ai.openAi.model": {
+          "type": "string"
+        },
+        "agent.ai.openAi.apiKey": {
+          "type": "string",
+          "description": "OpenAI API Key"
         },
         "agent.mcp.port": {
           "type": "integer",

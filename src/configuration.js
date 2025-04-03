@@ -6,15 +6,18 @@ import {spawnShellSync} from './extension-shell';
 /**
  * @typedef Configuration
  * @type {Object}
- * @property {number} aiSdkPort - The port for the HTTP server where the AI SDK is exposed.
- * @property {string} mcpHost - Podman MCP server host.
- * @property {string | number} mcpPort - Podman MCP server port.
+ * @property {Number} aiSdkPort - The port for the HTTP server where the AI SDK is exposed.
+ * @property {String} mcpHost - Podman MCP server host.
+ * @property {String | number} mcpPort - Podman MCP server port.
  * @property {Boolean} isWindows - Whether the host is Windows.
- * @property {string} podmanCli - The Podman CLI command.
+ * @property {String} podmanCli - The Podman CLI command.
  * @property {Object} containerConnection - The container connection object.
- * @property {string} provider - The provider for the agent.
- * @property {string} model - The model for the agent.
- * @property {string} googleApiKey - The Google API key for the agent.
+ * @property {String} provider - The AI model provider.
+ * @property {String} googleModel - The Google model.
+ * @property {String} googleApiKey - The Google API key.
+ * @property {String} openAiModel - The OpenAI model.
+ * @property {String} openAiBaseUrl - The OpenAI base URL.
+ * @property {String} openAiApiKey - The OpenAI API key.
  * @property {function: Promise<void>} load - Loads the configuration.
  * @property {function: Array} toEnv - Converts the configuration to environment variables.
  * @property {function: Array<string>} additionalHosts - Returns additional hosts for the container.
@@ -33,8 +36,11 @@ export const newConfiguration = () => {
     podmanCli: os.platform() === 'win32' ? 'podman.exe' : 'podman',
     containerConnection: null,
     provider: null,
-    model: null,
+    googleModel: null,
     googleApiKey: null,
+    openAiModel: null,
+    openAiBaseUrl: null,
+    openAiApiKey: null,
     load: async () => {
       configuration.aiSdkPort = await findFreePort();
       // Find container engine
@@ -51,14 +57,23 @@ export const newConfiguration = () => {
       );
       ////////////////////////
       configuration.provider = await extensionApi.configuration
-        .getConfiguration('agent.goose')
+        .getConfiguration('agent.ai')
         .get('provider');
-      configuration.model = await extensionApi.configuration
-        .getConfiguration('agent.goose')
+      configuration.googleModel = await extensionApi.configuration
+        .getConfiguration('agent.ai.google')
         .get('model');
       configuration.googleApiKey = await extensionApi.configuration
-        .getConfiguration('agent.goose.provider.gemini')
-        .get('googleApiKey');
+        .getConfiguration('agent.ai.google')
+        .get('apiKey');
+      configuration.openAiModel = await extensionApi.configuration
+        .getConfiguration('agent.ai.openAi')
+        .get('model');
+      configuration.openAiBaseUrl = await extensionApi.configuration
+        .getConfiguration('agent.ai.openAi')
+        .get('baseUrl');
+      configuration.openAiApiKey = await extensionApi.configuration
+        .getConfiguration('agent.ai.openAi')
+        .get('apiKey');
       const configuredMcpPort = await extensionApi.configuration
         .getConfiguration('agent.mcp')
         .get('port');
