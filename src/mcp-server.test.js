@@ -2,13 +2,13 @@ import {beforeEach, describe, expect, test, vi} from 'vitest';
 import {spawn, spawnSync} from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
-import {newMcpServer} from './extension-mcp-server';
+import {newMcpServer} from './mcp-server';
 import {newConfiguration} from './configuration.js';
 
 vi.mock('node:fs');
 vi.mock('node:os');
 
-describe('extension-mcp-server', () => {
+describe('mcp-server', () => {
   let configuration;
   let extensionContext;
   beforeEach(() => {
@@ -26,7 +26,7 @@ describe('extension-mcp-server', () => {
       expect(mcpServer.port).toBe(1337);
     });
   });
-  describe('start()', () => {
+  describe('mcpServer.start()', () => {
     test.each([
       {
         platform: 'darwin',
