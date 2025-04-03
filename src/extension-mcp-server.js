@@ -1,5 +1,5 @@
 /**
- * @typedef {import('./extension-configuration.js')}.Configuration Configuration
+ * @typedef {import('./configuration.js')}.Configuration Configuration
  */
 import extensionApi from '@podman-desktop/api';
 import os from 'node:os';

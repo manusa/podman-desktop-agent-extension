@@ -1,6 +1,6 @@
 import extensionApi from '@podman-desktop/api';
 import {resourceLoader, uriFixer} from './extension-util';
-import {newConfiguration} from './extension-configuration';
+import {newConfiguration} from './configuration';
 import {newMcpServer} from './extension-mcp-server';
 import {startWebSocketServer} from './extension-net';
 import {newAiSdk} from './ai-sdk';

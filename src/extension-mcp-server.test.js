@@ -3,7 +3,7 @@ import {spawn, spawnSync} from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import {newMcpServer} from './extension-mcp-server';
-import {newConfiguration} from './extension-configuration.js';
+import {newConfiguration} from './configuration.js';
 
 vi.mock('node:fs');
 vi.mock('node:os');

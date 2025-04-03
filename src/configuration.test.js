@@ -1,11 +1,11 @@
 import {beforeEach, describe, expect, test, vi} from 'vitest';
 import extensionApi from '@podman-desktop/api';
 import os from 'node:os';
-import {newConfiguration} from './extension-configuration';
+import {newConfiguration} from './configuration';
 
 vi.mock('node:os');
 
-describe('extension-configuration', () => {
+describe('configuration', () => {
   describe('newConfiguration()', () => {
     let configuration;
     describe('on windows', () => {
@@ -85,6 +85,10 @@ describe('extension-configuration', () => {
       test('Sets containerConnection to the first connection', () => {
         expect(configuration.containerConnection.providerId).toBe('docker-1');
       });
+    });
+    test('Sets aiSdkPort to a free random port', async () => {
+      await configuration.load();
+      expect(configuration.aiSdkPort).toBeGreaterThan(0);
     });
     describe('mcpPort', () => {
       test('Sets mcpPort to a free random port', async () => {
