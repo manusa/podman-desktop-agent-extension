@@ -68,25 +68,9 @@ export const newConfiguration = async () => {
     onChange: event => {
       if (event.affectsConfiguration('agent')) {
         console.log('Configuration changed');
-        console.log(JSON.stringify(event));
+        // NO OP - Good place to add specific listeners for configuration changes
       }
     }
-    //   if (event.affectsConfiguration('agent.mcp') && configuration) {
-    //     if (
-    //       mcpServer &&
-    //       parseInt(mcpServer.port) !== parseInt(configuration.mcpPort)
-    //     ) {
-    //       mcpServer.close();
-    //       mcpServer = newMcpServer({
-    //         configuration,
-    //         extensionContext: mcpServer.extensionContext
-    //       });
-    //       mcpServer.start();
-    //       statusBar.text = `MCP Server: ${configuration.mcpPort}`;
-    //       statusBar.tooltip = `MCP Server listening on http://localhost:${configuration.mcpPort}/sse`;
-    //     }
-    //   }
-    // }
   };
   return configuration;
 };
