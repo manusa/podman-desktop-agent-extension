@@ -2,7 +2,7 @@ import extensionApi from '@podman-desktop/api';
 import {resourceLoader, uriFixer} from './extension-util';
 import {newConfiguration} from './extension-configuration';
 import {newMcpServer} from './extension-mcp-server';
-import {findFreePort, startWebSocketServer} from './extension-net';
+import {startWebSocketServer} from './extension-net';
 import {newAiSdk} from './ai-sdk';
 
 const basePathSegments = ['dist', 'assistant-ui'];
@@ -37,7 +37,6 @@ const statusBar = extensionApi.window.createStatusBarItem();
 
 export const activate = async extensionContext => {
   await configuration.load();
-  configuration.aiSdkPort = await findFreePort();
   mcpServer = newMcpServer({configuration, extensionContext});
   mcpServer.start();
   aiSdk = await newAiSdk({configuration});

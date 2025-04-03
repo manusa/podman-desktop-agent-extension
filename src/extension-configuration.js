@@ -36,6 +36,7 @@ export const newConfiguration = () => {
     model: null,
     googleApiKey: null,
     load: async () => {
+      configuration.aiSdkPort = await findFreePort();
       // Find container engine
       const connections = extensionApi.provider.getContainerConnections() || [];
       configuration.containerConnection = connections.find(
