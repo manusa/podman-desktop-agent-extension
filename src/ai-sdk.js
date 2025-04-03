@@ -29,7 +29,7 @@ export const newAiSdk = ({configuration}) => {
     configuration,
     _server: null,
     start: () => {
-      console.log('Ai SDK: Starting...');
+      console.log('AI SDK: Starting...');
       try {
         const app = express();
         // TODO: proper CORS handling
@@ -45,11 +45,11 @@ export const newAiSdk = ({configuration}) => {
         app.post('/api/v1/messages', aiSdk._postMessages);
         aiSdk._server = app.listen(configuration.aiSdkPort);
       } catch (err) {
-        console.error('Error starting LangGraph:', err);
+        console.error('AI SDK: error starting', err);
       }
     },
     close: async () => {
-      console.log('Ai SDK: Closing...');
+      console.log('AI SDK: Closing...');
       aiSdk._server && aiSdk._server.close();
     },
     _postMessages: async (req, res) => {
@@ -81,7 +81,7 @@ export const newAiSdk = ({configuration}) => {
         });
         tools = await mcpClient.tools();
       } catch (err) {
-        console.error('Error creating MCP client:', err);
+        console.error('AI SDK: Error creating MCP client:', err);
       }
       const result = streamText({
         model,

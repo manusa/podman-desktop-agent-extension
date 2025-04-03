@@ -20,7 +20,7 @@ describe('ai-sdk', () => {
       aiSdk.close();
     });
     test('logs server starting', async () => {
-      expect(console.logs).toContain('Ai SDK: Starting...');
+      expect(console.logs).toContain('AI SDK: Starting...');
     });
     test('sets up express server', () => {
       expect(aiSdk._server).not.toBeNull();
@@ -39,7 +39,7 @@ describe('ai-sdk', () => {
       await aiSdk.close();
     });
     test('logs server closing', async () => {
-      expect(console.logs).toContain('Ai SDK: Closing...');
+      expect(console.logs).toContain('AI SDK: Closing...');
     });
     test('closes the server', () => {
       expect(aiSdk._server.listening).toBe(false);
