@@ -19,11 +19,10 @@ describe('mcp-server', () => {
     extensionContext = {};
   });
   describe('newMcpServer()', () => {
-    test('stores the port in a variable', () => {
-      configuration = newConfiguration();
-      configuration.mcpPort = 1337;
-      const mcpServer = newMcpServer({configuration, extensionContext});
-      expect(mcpServer.port).toBe(1337);
+    test('stores the port in a variable', async () => {
+      configuration = await newConfiguration();
+      const mcpServer = await newMcpServer({configuration, extensionContext});
+      expect(mcpServer.port).toBe(await configuration.mcpPort());
     });
   });
   describe('mcpServer.start()', () => {
@@ -64,7 +63,7 @@ describe('mcp-server', () => {
         vi.mocked(os.platform).mockReturnValue(platform);
         vi.mocked(os.arch).mockReturnValue(arch);
         configuration = await newConfiguration();
-        newMcpServer({configuration, extensionContext}).start();
+        (await newMcpServer({configuration, extensionContext})).start();
         expect(spawn).toHaveBeenCalledWith(
           `dist/${expectedBinary}`,
           expect.any(Array),
@@ -74,11 +73,11 @@ describe('mcp-server', () => {
     );
     test('adds --sse-port to args', async () => {
       configuration = await newConfiguration();
-      configuration.mcpPort = 1337;
-      newMcpServer({configuration, extensionContext}).start();
+      const configuredMcpPort = await configuration.mcpPort();
+      (await newMcpServer({configuration, extensionContext})).start();
       expect(spawn).toHaveBeenCalledWith(
         expect.any(String),
-        ['--sse-port', 1337],
+        ['--sse-port', configuredMcpPort],
         expect.any(Object)
       );
     });
@@ -86,10 +85,10 @@ describe('mcp-server', () => {
       vi.mocked(os.platform).mockReturnValue('linux');
       vi.mocked(os.arch).mockReturnValue('x64');
       configuration = await newConfiguration();
-      configuration.mcpPort = 1337;
-      newMcpServer({configuration, extensionContext}).start();
+      const configuredMcpPort = await configuration.mcpPort();
+      (await newMcpServer({configuration, extensionContext})).start();
       expect(console.logs).toContain(
-        'MCP Server: starting podman-mcp-server-linux-amd64 in port 1337'
+        `MCP Server: starting podman-mcp-server-linux-amd64 in port ${configuredMcpPort}`
       );
     });
   });
@@ -104,7 +103,7 @@ describe('mcp-server', () => {
         }
         killed = true;
       });
-      mcpServer = newMcpServer({
+      mcpServer = await newMcpServer({
         configuration: await newConfiguration(),
         extensionContext: {}
       });
@@ -123,7 +122,7 @@ describe('mcp-server', () => {
     });
     test('on Windows kills the process', async () => {
       vi.mocked(os.platform).mockReturnValue('win32');
-      mcpServer = newMcpServer({
+      mcpServer = await newMcpServer({
         configuration: await newConfiguration(),
         extensionContext: {}
       });

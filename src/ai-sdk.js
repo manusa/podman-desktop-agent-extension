@@ -76,7 +76,7 @@ export const newAiSdk = ({configuration}) => {
         mcpClient = await createMCPClient({
           transport: {
             type: 'sse',
-            url: `http://localhost:${configuration.mcpPort}/sse`
+            url: `http://localhost:${await configuration.mcpPort()}/sse`
           }
         });
         tools = await mcpClient.tools();

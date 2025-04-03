@@ -26,6 +26,7 @@ const binaryName = ({configuration}) => {
  * @property {Object} shell - The shell object used to spawn the MCP server.
  * @property {function: void} start - Starts the MCP server.
  * @property {function: void} close - Closes the MCP server.
+ * @property {function: void} monitor - Monitor thread to ensure the MCP server is always running.
  */
 /**
  * Creates a new MCP server instance.
@@ -34,12 +35,12 @@ const binaryName = ({configuration}) => {
  * @param {import('@podman-desktop/api').ExtensionContext} options.extensionContext - The extension context.
  * @returns {McpServer} The MCP server instance.
  */
-export const newMcpServer = ({configuration, extensionContext}) => {
+export const newMcpServer = async ({configuration, extensionContext}) => {
   /** @type {McpServer} */
   const mcpServer = {
     closing: false,
     binaryName: binaryName({configuration}),
-    port: configuration.mcpPort,
+    port: await configuration.mcpPort(),
     shell: null,
     start: () => {
       if (mcpServer.closing) {
@@ -54,7 +55,7 @@ export const newMcpServer = ({configuration, extensionContext}) => {
         mcpServer.binaryName
       );
       const executablePath = executableUri.fsPath;
-      const args = ['--sse-port', configuration.mcpPort];
+      const args = ['--sse-port', mcpServer.port];
       mcpServer.shell = spawnShell(executablePath, args);
       mcpServer.shell.onExit(code => {
         console.log(`MCP Server: exited with code ${code}`);
@@ -86,6 +87,11 @@ export const newMcpServer = ({configuration, extensionContext}) => {
         } catch {
           break;
         }
+      }
+    },
+    monitor: () => {
+      if (!mcpServer.shell && !mcpServer.closing) {
+        mcpServer.start();
       }
     }
   };

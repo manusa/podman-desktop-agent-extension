@@ -42,18 +42,6 @@ describe('configuration', () => {
       test('Sets mcpHost to "host.containers.internal"', () => {
         expect(configuration.mcpHost).toBe('host.containers.internal');
       });
-      describe('mcpPort', () => {
-        test('Sets mcpPort to a free random port', async () => {
-          expect(configuration.mcpPort).toBeGreaterThan(0);
-        });
-        test('Prefers configured mcpPort', async () => {
-          extensionApi.configuration.mockedSections['agent.mcp'] = {
-            ['port']: 313373
-          };
-          configuration = await newConfiguration();
-          expect(configuration.mcpPort).toBe(313373);
-        });
-      });
     });
   });
   test.each([
@@ -101,4 +89,23 @@ describe('configuration', () => {
       expect(await configuration[config]()).toBe(value);
     }
   );
+  describe('configuration.mcpPort()', () => {
+    test('free random port if not configured', async () => {
+      const configuration = await newConfiguration();
+      expect(await configuration.mcpPort()).toBeGreaterThan(0);
+    });
+    test('multiple calls return the same port (free random)', async () => {
+      const configuration = await newConfiguration();
+      const port1 = await configuration.mcpPort();
+      const port2 = await configuration.mcpPort();
+      expect(port1).toBe(port2);
+    });
+    test('Prefers configured mcpPort', async () => {
+      extensionApi.configuration.mockedSections['agent.mcp'] = {
+        ['port']: 313373
+      };
+      const configuration = await newConfiguration();
+      expect(await configuration.mcpPort()).toBe(313373);
+    });
+  });
 });

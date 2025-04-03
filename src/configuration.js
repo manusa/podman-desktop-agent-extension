@@ -11,7 +11,7 @@ import {findFreePort} from './net';
  * @type {Object}
  * @property {Number} aiSdkPort - The port for the HTTP server where the AI SDK is exposed.
  * @property {String} mcpHost - Podman MCP server host.
- * @property {String | number} mcpPort - Podman MCP server port.
+ * @property {function: Promise<String | number>} mcpPort - Podman MCP server port.
  * @property {Boolean} isWindows - Whether the host is Windows.
  * @property {String} podmanCli - The Podman CLI command.
  * @property {function: Promise<String>} provider - The AI model provider.
@@ -27,14 +27,20 @@ import {findFreePort} from './net';
  * @returns {Promise<Configuration>}
  */
 export const newConfiguration = async () => {
-  const configuredMcpPort = await extensionApi.configuration
-    .getConfiguration('agent.mcp')
-    .get('port');
+  const defaultMcpPort = await findFreePort();
   /** @type {Configuration} */
   const configuration = {
     aiSdkPort: await findFreePort(),
     mcpHost: 'host.containers.internal',
-    mcpPort: configuredMcpPort > 0 ? configuredMcpPort : await findFreePort(),
+    mcpPort: async () => {
+      const configuredMcpPort = await extensionApi.configuration
+        .getConfiguration('agent.mcp')
+        .get('port');
+      if (configuredMcpPort > 0) {
+        return configuredMcpPort;
+      }
+      return defaultMcpPort;
+    },
     isWindows: os.platform() === 'win32',
     podmanCli: os.platform() === 'win32' ? 'podman.exe' : 'podman',
     provider: async () =>
