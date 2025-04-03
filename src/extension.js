@@ -21,7 +21,6 @@ let aiSdk;
 
 extensionApi.configuration.onDidChangeConfiguration(async event => {
   if (event.affectsConfiguration('agent.mcp') && configuration) {
-    await configuration.load();
     if (
       mcpServer &&
       parseInt(mcpServer.port) !== parseInt(configuration.mcpPort)
@@ -41,7 +40,6 @@ const statusBar = extensionApi.window.createStatusBarItem();
 
 export const activate = async extensionContext => {
   configuration = await newConfiguration();
-  await configuration.load();
   mcpServer = newMcpServer({configuration, extensionContext});
   mcpServer.start();
   aiSdk = await newAiSdk({configuration});

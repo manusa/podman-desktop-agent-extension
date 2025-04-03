@@ -17,7 +17,6 @@ import {spawnShellSync} from './extension-shell';
  * @property {String} openAiModel - The OpenAI model.
  * @property {String} openAiBaseUrl - The OpenAI base URL.
  * @property {String} openAiApiKey - The OpenAI API key.
- * @property {function: Promise<void>} load - Loads the configuration.
  * @property {function: Array} toEnv - Converts the configuration to environment variables.
  * @property {function: Array<string>} additionalHosts - Returns additional hosts for the container.
  */
@@ -26,47 +25,34 @@ import {spawnShellSync} from './extension-shell';
  * @returns {Promise<Configuration>}
  */
 export const newConfiguration = async () => {
+  const configuredMcpPort = await extensionApi.configuration
+    .getConfiguration('agent.mcp')
+    .get('port');
   /** @type {Configuration} */
   const configuration = {
     aiSdkPort: await findFreePort(),
     mcpHost: 'host.containers.internal',
-    mcpPort: null,
+    mcpPort: configuredMcpPort > 0 ? configuredMcpPort : await findFreePort(),
     isWindows: os.platform() === 'win32',
     podmanCli: os.platform() === 'win32' ? 'podman.exe' : 'podman',
-    provider: null,
-    googleModel: null,
-    googleApiKey: null,
-    openAiModel: null,
-    openAiBaseUrl: null,
-    openAiApiKey: null,
-    load: async () => {
-      configuration.provider = await extensionApi.configuration
-        .getConfiguration('agent.ai')
-        .get('provider');
-      configuration.googleModel = await extensionApi.configuration
-        .getConfiguration('agent.ai.google')
-        .get('model');
-      configuration.googleApiKey = await extensionApi.configuration
-        .getConfiguration('agent.ai.google')
-        .get('apiKey');
-      configuration.openAiModel = await extensionApi.configuration
-        .getConfiguration('agent.ai.openAi')
-        .get('model');
-      configuration.openAiBaseUrl = await extensionApi.configuration
-        .getConfiguration('agent.ai.openAi')
-        .get('baseUrl');
-      configuration.openAiApiKey = await extensionApi.configuration
-        .getConfiguration('agent.ai.openAi')
-        .get('apiKey');
-      const configuredMcpPort = await extensionApi.configuration
-        .getConfiguration('agent.mcp')
-        .get('port');
-      if (configuredMcpPort > 0) {
-        configuration.mcpPort = configuredMcpPort;
-      } else if (!configuration.mcpPort) {
-        configuration.mcpPort = await findFreePort();
-      }
-    },
+    provider: await extensionApi.configuration
+      .getConfiguration('agent.ai')
+      .get('provider'),
+    googleModel: await extensionApi.configuration
+      .getConfiguration('agent.ai.google')
+      .get('model'),
+    googleApiKey: await extensionApi.configuration
+      .getConfiguration('agent.ai.google')
+      .get('apiKey'),
+    openAiModel: await extensionApi.configuration
+      .getConfiguration('agent.ai.openAi')
+      .get('model'),
+    openAiBaseUrl: await extensionApi.configuration
+      .getConfiguration('agent.ai.openAi')
+      .get('baseUrl'),
+    openAiApiKey: await extensionApi.configuration
+      .getConfiguration('agent.ai.openAi')
+      .get('apiKey'),
     toEnv: () => {
       return [
         '-e',
