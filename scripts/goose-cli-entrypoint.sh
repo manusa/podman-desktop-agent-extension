@@ -6,10 +6,10 @@ cat <<EOF > /home/goose/.config/goose/config.yaml
 GOOSE_PROVIDER: $GOOSE_PROVIDER
 GOOSE_MODEL: $GOOSE_MODEL
 extensions:
-  podman-sse:
+  mcp-sse:
     enabled: $SSE_ENABLED
     envs: {}
-    name: podman-sse
+    name: mcp-sse
     type: sse
     uri: http://$SSE_HOST:$SSE_PORT/sse
 

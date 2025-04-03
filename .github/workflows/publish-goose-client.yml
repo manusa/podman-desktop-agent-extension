@@ -1,4 +1,4 @@
-name: Publish Client Image
+name: Publish Goose Client Image
 
 on:
   push:
@@ -30,7 +30,7 @@ jobs:
           sudo apt-get install -y podman
       - name: Quay Login
         run: |
-          echo ${{ secrets.QUAY_PASSWORD }} | docker login quay.io -u ${{ secrets.QUAY_USERNAME }} --password-stdin
+          echo ${{ secrets.QUAY_PASSWORD }} | podman login quay.io -u ${{ secrets.QUAY_USERNAME }} --password-stdin
       - name: Build Image
         run: |
           podman build \
@@ -50,7 +50,7 @@ jobs:
     steps:
       - name: Quay Login
         run: |
-          echo ${{ secrets.QUAY_PASSWORD }} | docker login quay.io -u ${{ secrets.QUAY_USERNAME }} --password-stdin
+          echo ${{ secrets.QUAY_PASSWORD }} | podman login quay.io -u ${{ secrets.QUAY_USERNAME }} --password-stdin
       - name: Create Manifest
         run: |
           podman manifest create \
