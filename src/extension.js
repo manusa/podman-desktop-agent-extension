@@ -62,10 +62,6 @@ export const activate = async extensionContext => {
   });
   let indexHtml = fixResource(await loadResource(indexPathSegments));
   indexHtml = indexHtml.replace(
-    '<body>',
-    `<body><script>window.wsAddress = 'ws://localhost:${webSocketServer.address().port}/';</script>`
-  );
-  indexHtml = indexHtml.replace(
     "window.baseUrl='';",
     `window.baseUrl='http://localhost:${configuration.aiSdkPort}';`
   );
