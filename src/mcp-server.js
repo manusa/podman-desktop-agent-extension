@@ -20,6 +20,7 @@ const binaryName = ({configuration}) => {
 /**
  * @typedef McpServer
  * @type {Object}
+ * @property {Boolean} closing - Whether the MCP server is closing.
  * @property {String} binaryName - The name of the MCP server binary.
  * @property {String | Number} port - The port the MCP server is running on.
  * @property {Object} shell - The shell object used to spawn the MCP server.
@@ -36,12 +37,16 @@ const binaryName = ({configuration}) => {
 export const newMcpServer = ({configuration, extensionContext}) => {
   /** @type {McpServer} */
   const mcpServer = {
+    closing: false,
     binaryName: binaryName({configuration}),
     port: configuration.mcpPort,
     shell: null,
     start: () => {
+      if (mcpServer.closing) {
+        return;
+      }
       console.log(
-        `Starting Podman MCP server at ${mcpServer.binaryName} in port ${mcpServer.port}`
+        `MCP Server: starting ${mcpServer.binaryName} in port ${mcpServer.port}`
       );
       const executableUri = extensionApi.Uri.joinPath(
         extensionContext.extensionUri,
@@ -52,14 +57,17 @@ export const newMcpServer = ({configuration, extensionContext}) => {
       const args = ['--sse-port', configuration.mcpPort];
       mcpServer.shell = spawnShell(executablePath, args);
       mcpServer.shell.onExit(code => {
-        console.log(`Podman MCP server exited with code ${code}`);
+        console.log(`MCP Server: exited with code ${code}`);
       });
     },
     close: () => {
-      if (!mcpServer.shell) {
+      console.log('MCP Server: closing...');
+      if (!mcpServer.shell || mcpServer.closing) {
+        console.log('MCP Server: already closed');
         return;
       }
-      console.log(`Closing MCP server at PID ${mcpServer.shell.pid}`);
+      mcpServer.closing = true;
+      console.log(`MCP Server: closing server at PID ${mcpServer.shell.pid}`);
       if (configuration.isWindows) {
         // For some reason the process exits but remains on Windows
         spawnShellSync('taskkill.exe', [

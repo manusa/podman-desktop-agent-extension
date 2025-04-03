@@ -72,8 +72,8 @@ describe('mcp-server', () => {
         );
       }
     );
-    test('adds --sse-port to args', () => {
-      configuration = newConfiguration();
+    test('adds --sse-port to args', async () => {
+      configuration = await newConfiguration();
       configuration.mcpPort = 1337;
       newMcpServer({configuration, extensionContext}).start();
       expect(spawn).toHaveBeenCalledWith(
@@ -82,14 +82,14 @@ describe('mcp-server', () => {
         expect.any(Object)
       );
     });
-    test('logs when the server starts', () => {
+    test('logs when the server starts', async () => {
       vi.mocked(os.platform).mockReturnValue('linux');
       vi.mocked(os.arch).mockReturnValue('x64');
-      configuration = newConfiguration();
+      configuration = await newConfiguration();
       configuration.mcpPort = 1337;
       newMcpServer({configuration, extensionContext}).start();
       expect(console.logs).toContain(
-        'Starting Podman MCP server at podman-mcp-server-linux-amd64 in port 1337'
+        'MCP Server: starting podman-mcp-server-linux-amd64 in port 1337'
       );
     });
   });
@@ -112,7 +112,11 @@ describe('mcp-server', () => {
       mcpServer.close();
     });
     test('logs when the server stops', () => {
-      expect(console.logs).toContain('Closing MCP server');
+      expect(console.logs).toContain('MCP Server: closing...');
+    });
+    test('logs when the server is already closed', () => {
+      mcpServer.close();
+      expect(console.logs).toContain('MCP Server: already closed');
     });
     test('on *nix kills the process', () => {
       expect(process.kill).toHaveBeenCalledWith(mcpServer.shell.pid);
