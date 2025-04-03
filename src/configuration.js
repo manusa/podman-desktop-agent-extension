@@ -11,7 +11,6 @@ import {spawnShellSync} from './extension-shell';
  * @property {String | number} mcpPort - Podman MCP server port.
  * @property {Boolean} isWindows - Whether the host is Windows.
  * @property {String} podmanCli - The Podman CLI command.
- * @property {Object} containerConnection - The container connection object.
  * @property {String} provider - The AI model provider.
  * @property {String} googleModel - The Google model.
  * @property {String} googleApiKey - The Google API key.
@@ -34,7 +33,6 @@ export const newConfiguration = async () => {
     mcpPort: null,
     isWindows: os.platform() === 'win32',
     podmanCli: os.platform() === 'win32' ? 'podman.exe' : 'podman',
-    containerConnection: null,
     provider: null,
     googleModel: null,
     googleApiKey: null,
@@ -42,19 +40,6 @@ export const newConfiguration = async () => {
     openAiBaseUrl: null,
     openAiApiKey: null,
     load: async () => {
-      // Find container engine
-      const connections = extensionApi.provider.getContainerConnections() || [];
-      configuration.containerConnection = connections.find(
-        c => c && c.connection && c.connection.type === 'podman'
-      );
-      if (!configuration.containerConnection && connections.length > 0) {
-        configuration.containerConnection = connections[0];
-      }
-      console.log(
-        'Container connection:',
-        configuration.containerConnection?.connection?.type ?? 'none'
-      );
-      ////////////////////////
       configuration.provider = await extensionApi.configuration
         .getConfiguration('agent.ai')
         .get('provider');

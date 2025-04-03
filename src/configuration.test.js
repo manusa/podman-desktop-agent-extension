@@ -36,6 +36,9 @@ describe('configuration', () => {
       beforeEach(async () => {
         configuration = await newConfiguration();
       });
+      test('Sets aiSdkPort to a free random port', async () => {
+        expect(configuration.aiSdkPort).toBeGreaterThan(0);
+      });
       test('Sets mcpHost to "host.containers.internal"', () => {
         expect(configuration.mcpHost).toBe('host.containers.internal');
       });
@@ -45,50 +48,6 @@ describe('configuration', () => {
     let configuration;
     beforeEach(async () => {
       configuration = await newConfiguration();
-    });
-    describe('with no providers', () => {
-      beforeEach(async () => {
-        vi.mocked(
-          extensionApi.provider.getContainerConnections
-        ).mockReturnValue([]);
-        await configuration.load();
-      });
-      test('Sets containerConnection to undefined', () => {
-        expect(configuration.containerConnection).toBeUndefined();
-      });
-    });
-    describe('with multiple providers and podman', () => {
-      beforeEach(async () => {
-        vi.mocked(
-          extensionApi.provider.getContainerConnections
-        ).mockReturnValue([
-          {providerId: 'docker', connection: {type: 'docker'}},
-          {providerId: 'podman-1', connection: {type: 'podman'}},
-          {providerId: 'podman-2', connection: {type: 'podman'}}
-        ]);
-        await configuration.load();
-      });
-      test('Sets containerConnection to the first podman connection', () => {
-        expect(configuration.containerConnection.providerId).toBe('podman-1');
-      });
-    });
-    describe('with no podman provider', () => {
-      beforeEach(async () => {
-        vi.mocked(
-          extensionApi.provider.getContainerConnections
-        ).mockReturnValue([
-          {providerId: 'docker-1', connection: {type: 'docker'}},
-          {providerId: 'docker-2', connection: {type: 'docker'}}
-        ]);
-        await configuration.load();
-      });
-      test('Sets containerConnection to the first connection', () => {
-        expect(configuration.containerConnection.providerId).toBe('docker-1');
-      });
-    });
-    test('Sets aiSdkPort to a free random port', async () => {
-      await configuration.load();
-      expect(configuration.aiSdkPort).toBeGreaterThan(0);
     });
     describe('mcpPort', () => {
       test('Sets mcpPort to a free random port', async () => {
