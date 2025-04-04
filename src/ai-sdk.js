@@ -55,7 +55,7 @@ export const newAiSdk = ({configuration}) => {
     _postMessages: async (req, res) => {
       console.log('AI SDK: New message request');
       let model;
-      if ((await configuration.provider()) === 'OpenAI') {
+      if ((await configuration.provider()).toLowerCase() === 'openai') {
         console.log('AI SDK: Using OpenAI');
         const openai = createOpenAI({
           apiKey: await configuration.openAiApiKey(),
