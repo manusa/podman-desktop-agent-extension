@@ -52,50 +52,62 @@
   --tw-exit-translatey: initial;
 }
 
+/* prettier-ignore */
 @utility fade-in-* {
   --tw-enter-opacity: calc(--value(--animation-opacity-*, integer) * 0.01);
 }
 
+/* prettier-ignore */
 @utility fade-out-* {
   --tw-exit-opacity: calc(--value(--animation-opacity-*, integer) * 0.01);
 }
 
+/* prettier-ignore */
 @utility zoom-in-* {
   --tw-enter-scale: calc(--value(--animation-scale-*, integer) * 0.01);
 }
 
+/* prettier-ignore */
 @utility zoom-out-* {
   --tw-exit-scale: calc(--value(--animation-scale-*, integer) * 0.01);
 }
 
+/* prettier-ignore */
 @utility slide-in-from-top-* {
   --tw-enter-translate-y: calc(-1 * calc(--value(integer) * var(--animation-translate)));
 }
 
+/* prettier-ignore */
 @utility slide-in-from-bottom-* {
   --tw-enter-translate-y: calc(--value(integer) * var(--animation-translate));
 }
 
+/* prettier-ignore */
 @utility slide-in-from-left-* {
   --tw-enter-translate-x: calc(-1 * calc(--value(integer) * var(--animation-translate)));
 }
 
+/* prettier-ignore */
 @utility slide-in-from-right-* {
   --tw-enter-translate-x: calc(--value(integer) * var(--animation-translate));
 }
 
+/* prettier-ignore */
 @utility slide-out-to-top-* {
   --tw-exit-translate-y: calc(-1 * calc(--value(integer) * var(--animation-translate)));
 }
 
+/* prettier-ignore */
 @utility slide-out-to-bottom-* {
   --tw-exit-translate-y: calc(--value(integer) * var(--animation-translate));
 }
 
+/* prettier-ignore */
 @utility slide-out-to-left-* {
   --tw-exit-translate-x: calc(-1 * calc(--value(integer) * var(--animation-translate)));
 }
 
+/* prettier-ignore */
 @utility slide-out-to-right-* {
   --tw-exit-translate-x: calc(--value(integer) * var(--animation-translate));
 }
