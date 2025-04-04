@@ -1,12 +1,15 @@
+import {Provider} from 'react-redux';
 import {AssistantUiProvider} from './AssistantUiProvider';
-import {Thread} from './components';
+import {ChatInterface, store} from './';
 
 export const App = () => {
   return (
-    <AssistantUiProvider>
-      <main className='aui'>
-        <Thread />
-      </main>
-    </AssistantUiProvider>
+    <Provider store={store}>
+      <AssistantUiProvider>
+        <main className='aui'>
+          <ChatInterface />
+        </main>
+      </AssistantUiProvider>
+    </Provider>
   );
 };
