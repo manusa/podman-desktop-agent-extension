@@ -10,7 +10,7 @@ export const ToolFallback = ({toolName, argsText, result}) => {
       className='aui-tool-fallback'
       data-state={isCollapsed ? 'closed' : 'open'}
     >
-      <div className='aui-tool-fallback__summary flex items-center gap-2 px-4'>
+      <div className='aui-tool-fallback__summary'>
         <CheckIcon className='size-4' />
         <p>
           Used tool: <strong>{toolName}</strong>

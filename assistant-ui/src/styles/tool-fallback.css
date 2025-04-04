@@ -4,6 +4,9 @@
       --animation-duration: 0.5s;
       @apply mb-4 flex w-full flex-col rounded-lg border py-3;
 
+      & .aui-tool-fallback__summary {
+        @apply flex items-center gap-2 px-4;
+      }
       & .aui-tool-fallback__detail {
         @apply flex flex-col h-0 p-0 overflow-hidden animate-out fade-out-0;
         transition: height var(--animation-duration) ease-in;
