@@ -34,11 +34,11 @@ try {
   app.use(express.static(resolve(__dirname, '..', 'dist', 'assistant-ui'))); // Serves resources from public folder
 
   app.use(express.json());
-  app.post('/api/v1/messages', (req, res) => {
-    const aiSdkUrl = `http://localhost:${configuration.aiSdkPort}/api/v1/messages`;
+  app.use((req, res) => {
+    const aiSdkUrl = `http://localhost:${configuration.aiSdkPort}${req.url}`;
     fetch(aiSdkUrl, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+      method: req.method,
+      headers: req.headers,
       body: JSON.stringify(req.body)
     })
       .then(response => {
