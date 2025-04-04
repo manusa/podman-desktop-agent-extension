@@ -1,17 +1,11 @@
 import {AssistantUiProvider} from './AssistantUiProvider';
-import {Thread, ToolFallback} from './components';
+import {Thread} from './components';
 
 export const App = () => {
   return (
     <AssistantUiProvider>
       <main className='assistant-ui'>
-        <Thread
-          assistantMessage={{
-            components: {
-              ToolFallback: ToolFallback
-            }
-          }}
-        />
+        <Thread />
       </main>
     </AssistantUiProvider>
   );
