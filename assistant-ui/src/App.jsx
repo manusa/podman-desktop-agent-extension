@@ -4,7 +4,7 @@ import {Thread} from './components';
 export const App = () => {
   return (
     <AssistantUiProvider>
-      <main className='assistant-ui'>
+      <main className='aui'>
         <Thread />
       </main>
     </AssistantUiProvider>

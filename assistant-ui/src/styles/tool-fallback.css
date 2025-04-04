@@ -1,0 +1,20 @@
+@layer components {
+  .aui {
+    & .aui-tool-fallback {
+      --animation-duration: 0.5s;
+      @apply mb-4 flex w-full flex-col rounded-lg border py-3;
+
+      & .aui-tool-fallback__detail {
+        @apply flex flex-col h-0 p-0 overflow-hidden animate-out fade-out-0;
+        transition: height var(--animation-duration) ease-in;
+      }
+    }
+  }
+  & .aui-tool-fallback[data-state='open'] {
+    @apply gap-3;
+
+    & .aui-tool-fallback__detail {
+      @apply gap-2 h-auto border-t pt-2 overflow-visible animate-in fade-in-0 slide-in-from-top-20;
+    }
+  }
+}

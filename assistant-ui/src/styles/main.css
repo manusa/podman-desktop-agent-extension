@@ -2,6 +2,7 @@
 @import './_vars.css';
 @import './tailwindcss/theme.css';
 @import './tailwindcss/animate.css';
+@import './tool-fallback.css';
 
 @layer base {
   *,
@@ -28,7 +29,7 @@
 }
 
 @layer components {
-  .assistant-ui {
+  .aui {
     /* IF using thread list */
     /*@apply h-dvh grid grid-cols-[200px_1fr] gap-x-2 px-4 py-4*/
     height: 100vh;
