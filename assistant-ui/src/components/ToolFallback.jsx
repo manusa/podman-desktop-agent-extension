@@ -1,6 +1,6 @@
 import {useState} from 'react';
 import {CheckIcon, ChevronDownIcon, ChevronUpIcon} from 'lucide-react';
-import {Button} from './Button.jsx';
+import {Button} from './';
 
 export const ToolFallback = ({toolName, argsText, result}) => {
   const [isCollapsed, setIsCollapsed] = useState(true);

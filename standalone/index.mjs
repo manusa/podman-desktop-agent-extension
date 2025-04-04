@@ -20,7 +20,11 @@ try {
   configuration.googleModel = async () => 'gemini-2.0-flash';
   configuration.googleApiKey = async () => process.env['GOOGLE_API_KEY'];
 
-  const mcpServer = await newMcpServer({configuration, extensionContext, statusBar: null});
+  const mcpServer = await newMcpServer({
+    configuration,
+    extensionContext,
+    statusBar: null
+  });
   await mcpServer.monitor();
 
   const aiSdk = await newAiSdk({configuration});

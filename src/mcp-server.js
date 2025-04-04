@@ -57,7 +57,11 @@ const killProcess = ({configuration, pid}) => {
  * @param {import('@podman-desktop/api').StatusBarItem} options.statusBar - The status bar item (If running in Podman Desktop).
  * @returns {McpServer} The MCP server instance.
  */
-export const newMcpServer = async ({configuration, extensionContext, statusBar}) => {
+export const newMcpServer = async ({
+  configuration,
+  extensionContext,
+  statusBar
+}) => {
   /** @type {McpServer} */
   const mcpServer = {
     closing: false,
