@@ -12,9 +12,19 @@
  * @property {function: void} close - Closes the LangGraph instance.
  */
 import express from 'express';
-import {streamText, experimental_createMCPClient as createMCPClient} from 'ai';
+import {streamText, experimental_createMCPClient as createMCPClient, wrapLanguageModel, simulateStreamingMiddleware} from 'ai';
 import {createGoogleGenerativeAI} from '@ai-sdk/google';
-import {createOpenAI} from '@ai-sdk/openai';
+
+import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
+
+const openAiSystemPrompt =
+  'Knowledge Cutoff Date: April 2024.\n' +
+  `Today's Date: ${new Date().toISOString().split('T')[0]}.\n` +
+  'You are Granite, developed by IBM. You are a helpful AI assistant with access to the tools listed next. ' +
+  'When a tool is required to answer the user\'s query, respond with `<tool_call>` followed by a JSON object of the tool used. ' +
+  'For example: `<tool_call> {"name":"function_name","arguments":{"arg1":"value"}} </tool_call>` or if it has no arguments `<tool_call> {"name":"function_name","arguments":{}} </tool_call>`' +
+  'The user will respond with the output of the tool execution response so you can continue with the rest of the initial user prompt (continue).\n' +
+  'If a tool does not exist in the provided list of tools, notify the user that you do not have the ability to fulfill the request.';
 
 /**
  * Creates a new LangGraph instance.
@@ -54,15 +64,22 @@ export const newAiSdk = ({configuration}) => {
     },
     _postMessages: async (req, res) => {
       console.log('AI SDK: New message request');
+      let systemPrompt;
       let model;
       if ((await configuration.provider()).toLowerCase() === 'openai') {
+        systemPrompt = openAiSystemPrompt;
         console.log('AI SDK: Using OpenAI');
-        const openai = createOpenAI({
+        const openai = createOpenAICompatible({
+          name: 'openai-compatible-provider',
           apiKey: await configuration.openAiApiKey(),
           baseURL: await configuration.openAiBaseUrl(),
-          compatibility: 'compatible'
         });
         model = openai(await configuration.openAiModel());
+        // Tool calling doesn't seem to be supported in stream mode for Ollama
+        model = wrapLanguageModel({
+          model: openai(await configuration.openAiModel()),
+          middleware: simulateStreamingMiddleware()
+        });
       } else {
         console.log('AI SDK: Using Google');
         const google = createGoogleGenerativeAI({
@@ -84,8 +101,12 @@ export const newAiSdk = ({configuration}) => {
         console.error('AI SDK: Error creating MCP client:', err);
       }
       const result = streamText({
+        system: systemPrompt,
         model,
         tools,
+        experimental_continueSteps: true,
+        toolCallStreaming: false,
+        maxSteps: 99,
         messages: req.body.messages,
         onFinish: () => mcpClient && mcpClient.close(),
         onError: err => {
