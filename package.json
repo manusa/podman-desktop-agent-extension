@@ -77,7 +77,7 @@
     "@ai-sdk/google": "1.2.11",
     "@ai-sdk/openai-compatible": "0.2.11",
     "@assistant-ui/react": "0.8.20",
-    "@assistant-ui/react-ai-sdk": "0.8.1",
+    "@assistant-ui/react-ai-sdk": "0.9.1",
     "@assistant-ui/react-ui": "0.1.8",
     "ai": "4.3.7",
     "express": "5.1.0",
