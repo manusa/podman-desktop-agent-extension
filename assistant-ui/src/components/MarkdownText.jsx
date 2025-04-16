@@ -196,7 +196,7 @@ export const MarkdownText = memo(() => {
   return (
     <MarkdownTextPrimitive
       remarkPlugins={[remarkGfm]}
-      className='aui-md overflow-x-auto'
+      className='overflow-x-auto'
       components={defaultComponents}
     />
   );
