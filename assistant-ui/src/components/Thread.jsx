@@ -15,7 +15,14 @@ import {
   RefreshCwIcon,
   SendHorizontalIcon
 } from 'lucide-react';
-import {Button, cn, MarkdownText, ToolFallback, TooltipIconButton} from './';
+import {
+  Button,
+  cn,
+  MarkdownText,
+  ThreadRunning,
+  ToolFallback,
+  TooltipIconButton
+} from './';
 
 const CircleStopIcon = () => {
   return (
@@ -267,6 +274,8 @@ export const Thread = () => {
             AssistantMessage: AssistantMessage
           }}
         />
+
+        <ThreadRunning />
 
         <ThreadPrimitive.If empty={false}>
           <div className='min-h-8 flex-grow' />
