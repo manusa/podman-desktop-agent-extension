@@ -88,7 +88,7 @@
     "remark-gfm":"4.0.1",
     "sonner": "2.0.3",
     "tailwind-merge": "3.2.0",
-    "ws": "8.18.1"
+    "ws": "8.18.2"
   },
   "devDependencies": {
     "@tailwindcss/vite": "4.1.5",
