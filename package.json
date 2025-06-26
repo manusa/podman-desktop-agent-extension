@@ -101,7 +101,7 @@
     "prettier": "3.6.1",
     "tailwindcss": "4.1.10",
     "vite": "6.3.5",
-    "vitest": "3.2.2"
+    "vitest": "3.2.4"
   },
   "prettier": {
     "singleQuote": true,
