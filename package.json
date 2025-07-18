@@ -73,7 +73,7 @@
     "standalone:watch": "concurrently \"vite -c vite.assistant-ui.config.js build -m development --watch\" \"npm run standalone\""
   },
   "dependencies": {
-    "@podman-desktop/api": "1.20.1",
+    "@podman-desktop/api": "1.20.2",
     "@ai-sdk/google": "1.2.22",
     "@ai-sdk/openai-compatible": "0.2.16",
     "@assistant-ui/react": "0.10.25",
