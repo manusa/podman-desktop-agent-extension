@@ -75,7 +75,7 @@
   "dependencies": {
     "@podman-desktop/api": "1.20.2",
     "@ai-sdk/google": "1.2.22",
-    "@ai-sdk/openai-compatible": "0.2.16",
+    "@ai-sdk/openai-compatible": "1.0.0",
     "@assistant-ui/react": "0.10.33",
     "@assistant-ui/react-ai-sdk": "0.10.16",
     "@assistant-ui/react-ui": "0.1.8",
