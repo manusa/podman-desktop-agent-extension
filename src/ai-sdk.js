@@ -12,16 +12,23 @@
  * @property {function: void} close - Closes the LangGraph instance.
  */
 import express from 'express';
-import {streamText, experimental_createMCPClient as createMCPClient, wrapLanguageModel, simulateStreamingMiddleware} from 'ai';
+import {
+  convertToModelMessages,
+  streamText,
+  experimental_createMCPClient as createMCPClient,
+  wrapLanguageModel,
+  simulateStreamingMiddleware,
+  stepCountIs
+} from 'ai';
 import {createGoogleGenerativeAI} from '@ai-sdk/google';
 
-import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
+import {createOpenAICompatible} from '@ai-sdk/openai-compatible';
 
 const openAiSystemPrompt =
   'Knowledge Cutoff Date: April 2024.\n' +
   `Today's Date: ${new Date().toISOString().split('T')[0]}.\n` +
   'You are Granite, developed by IBM. You are a helpful AI assistant with access to the tools listed next. ' +
-  'When a tool is required to answer the user\'s query, respond with `<tool_call>` followed by a JSON object of the tool used. ' +
+  "When a tool is required to answer the user's query, respond with `<tool_call>` followed by a JSON object of the tool used. " +
   'For example: `<tool_call> {"name":"function_name","arguments":{"arg1":"value"}} </tool_call>` or if it has no arguments `<tool_call> {"name":"function_name","arguments":{}} </tool_call>`' +
   'The user will respond with the output of the tool execution response so you can continue with the rest of the initial user prompt (continue).\n' +
   'If a tool does not exist in the provided list of tools, notify the user that you do not have the ability to fulfill the request.';
@@ -72,7 +79,7 @@ export const newAiSdk = ({configuration}) => {
         const openai = createOpenAICompatible({
           name: 'openai-compatible-provider',
           apiKey: await configuration.openAiApiKey(),
-          baseURL: await configuration.openAiBaseUrl(),
+          baseURL: await configuration.openAiBaseUrl()
         });
         model = openai(await configuration.openAiModel());
         // Tool calling doesn't seem to be supported in stream mode for Ollama
@@ -106,15 +113,15 @@ export const newAiSdk = ({configuration}) => {
         tools,
         experimental_continueSteps: true,
         toolCallStreaming: false,
-        maxSteps: 99,
-        messages: req.body.messages,
+        stopWhen: stepCountIs(10),
+        messages: convertToModelMessages(req.body.messages),
         onFinish: () => mcpClient && mcpClient.close(),
         onError: err => {
           console.error(err);
           mcpClient && mcpClient.close();
         }
       });
-      result.pipeDataStreamToResponse(res);
+      result.pipeUIMessageStreamToResponse(res);
     }
   };
   return aiSdk;
