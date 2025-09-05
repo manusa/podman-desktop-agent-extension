@@ -100,7 +100,7 @@
     "eslint": "9.34.0",
     "globals": "16.3.0",
     "prettier": "3.6.2",
-    "tailwindcss": "4.1.12",
+    "tailwindcss": "4.1.13",
     "vite": "7.1.4",
     "vitest": "3.2.2"
   },
