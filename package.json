@@ -80,7 +80,7 @@
     "@assistant-ui/react": "0.10.48",
     "@assistant-ui/react-ai-sdk": "1.0.5",
     "@assistant-ui/react-ui": "0.1.8",
-    "ai": "5.0.30",
+    "ai": "5.0.33",
     "express": "5.1.0",
     "react": "19.1.1",
     "react-dom": "19.1.1",
