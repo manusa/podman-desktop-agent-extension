@@ -82,7 +82,7 @@
     "@assistant-ui/react-ui": "0.2.0",
     "ai": "5.0.59",
     "express": "5.1.0",
-    "react": "19.1.1",
+    "react": "19.2.0",
     "react-dom": "19.1.1",
     "react-redux": "9.2.0",
     "redux": "5.0.1",
