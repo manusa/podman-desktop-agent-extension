@@ -101,7 +101,7 @@
     "globals": "16.5.0",
     "prettier": "3.6.2",
     "tailwindcss": "4.1.16",
-    "vite": "7.1.12",
+    "vite": "7.2.1",
     "vitest": "3.2.2"
   },
   "prettier": {
