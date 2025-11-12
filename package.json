@@ -76,7 +76,7 @@
     "@podman-desktop/api": "1.22.1",
     "@ai-sdk/google": "2.0.31",
     "@ai-sdk/openai-compatible": "1.0.26",
-    "@ai-sdk/react": "2.0.90",
+    "@ai-sdk/react": "2.0.92",
     "@assistant-ui/react": "0.10.50",
     "@assistant-ui/react-ai-sdk": "1.0.5",
     "@assistant-ui/react-ui": "0.2.1",
