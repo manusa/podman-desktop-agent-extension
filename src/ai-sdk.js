@@ -15,11 +15,11 @@ import express from 'express';
 import {
   convertToModelMessages,
   streamText,
-  experimental_createMCPClient as createMCPClient,
   wrapLanguageModel,
   simulateStreamingMiddleware,
   stepCountIs
 } from 'ai';
+import {experimental_createMCPClient as createMCPClient} from '@ai-sdk/mcp';
 import {createGoogleGenerativeAI} from '@ai-sdk/google';
 
 import {createOpenAICompatible} from '@ai-sdk/openai-compatible';
