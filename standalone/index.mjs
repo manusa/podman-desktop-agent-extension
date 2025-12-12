@@ -17,7 +17,7 @@ try {
 
   const configuration = await newConfiguration();
   configuration.provider = async () => 'google';
-  configuration.googleModel = async () => 'gemini-2.0-flash';
+  configuration.googleModel = async () => 'gemini-flash-latest';
   configuration.googleApiKey = async () => process.env['GOOGLE_API_KEY'];
 
   const mcpServer = await newMcpServer({
