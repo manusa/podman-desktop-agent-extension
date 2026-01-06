@@ -90,7 +90,7 @@
     "remark-gfm":"4.0.1",
     "sonner": "2.0.7",
     "tailwind-merge": "3.4.0",
-    "ws": "8.18.3"
+    "ws": "8.19.0"
   },
   "devDependencies": {
     "@tailwindcss/vite": "4.1.18",
