@@ -78,7 +78,7 @@
     "@ai-sdk/mcp": "1.0.13",
     "@ai-sdk/openai-compatible": "2.0.18",
     "@ai-sdk/react": "3.0.50",
-    "@assistant-ui/react": "0.10.50",
+    "@assistant-ui/react": "0.11.58",
     "@assistant-ui/react-ai-sdk": "1.0.5",
     "@assistant-ui/react-ui": "0.2.1",
     "ai": "6.0.48",
