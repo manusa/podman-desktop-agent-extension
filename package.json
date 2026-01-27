@@ -84,7 +84,7 @@
     "ai": "6.0.50",
     "express": "5.2.1",
     "react": "19.2.4",
-    "react-dom": "19.2.3",
+    "react-dom": "19.2.4",
     "react-redux": "9.2.0",
     "redux": "5.0.1",
     "remark-gfm":"4.0.1",
