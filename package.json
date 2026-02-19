@@ -89,7 +89,7 @@
     "redux": "5.0.1",
     "remark-gfm":"4.0.1",
     "sonner": "2.0.7",
-    "tailwind-merge": "3.4.1",
+    "tailwind-merge": "3.5.0",
     "ws": "8.19.0"
   },
   "devDependencies": {
